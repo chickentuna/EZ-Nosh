@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
 
 public class RecipeManager {
@@ -73,6 +74,13 @@ public class RecipeManager {
 		i = new Item(ing,Float.parseFloat(num),unit);
 		
 		return i;
+	}
+
+	public List<Recipe> getRandomRecipes(int normals, int speedies, int picnics, int desserts) {
+		for (int k = 0; k<normals; k++) {
+			
+		}
+		return null;
 	}
 	
 	
