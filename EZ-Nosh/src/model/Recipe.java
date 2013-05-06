@@ -11,16 +11,21 @@ public class Recipe {
 		
 	private String name;
 	private LinkedList<Item> items;
+	private int type;
 	
-	public Recipe(String name) {
+	public Recipe(String name, int type) {
 		this.name= name;
 		items = new LinkedList<Item>();
-		
+		this.type = type;
 	}
 
 	public void add(Item i) {
 		items.add(i);
 		
+	}
+	
+	public int getType() {
+		return type;
 	}
 
 }

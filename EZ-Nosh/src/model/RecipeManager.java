@@ -45,7 +45,8 @@ public class RecipeManager {
 		if (name == null || name.equals("")) {
 			return null;
 		}
-		r = new Recipe(name);
+		int type = Integer.parseInt(input.readLine());
+		r = new Recipe(name, type);
 		Item i;
 		i = getNextItem();
 		
