@@ -1,21 +1,17 @@
 package control;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.FileNotFoundException;
 
-import javax.swing.JLabel;
+import model.RecipeManager;
 
 import com.google.common.eventbus.EventBus;
-
 import view.Window;
 
 public class Controller  {
 
 	private EventBus bus;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 		new Controller();
 	}
 
@@ -23,6 +19,7 @@ public class Controller  {
 		bus = new EventBus();
 		Window view = new Window();
 		bus.register(view);
+		RecipeManager.get();
 	}
 
 	
