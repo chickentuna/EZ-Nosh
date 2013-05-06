@@ -78,9 +78,14 @@ public class RecipeManager {
 
 	public List<Recipe> getRandomRecipes(int normals, int speedies, int picnics, int desserts) {
 		for (int k = 0; k<normals; k++) {
-			
+			getRandomRecipe(Recipe.NORMAL);
 		}
 		return null;
+	}
+
+	private Recipe getRandomRecipe(int type) {
+
+		
 	}
 	
 	
