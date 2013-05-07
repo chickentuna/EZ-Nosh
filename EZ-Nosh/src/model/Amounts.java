@@ -1,9 +1,8 @@
 package model;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
-public class Amounts extends HashMap<Entry<String,String>, Float> {
+public class Amounts extends HashMap<Pair<String,String>, Float> {
 
 	private static final long serialVersionUID = 7509483396246292620L;
 	
@@ -11,42 +10,13 @@ public class Amounts extends HashMap<Entry<String,String>, Float> {
 		super();
 	}
 	
-	class Pair implements Entry<String, String> {
-
-		String key;
-		String value;
-		
-		public Pair(String key, String value) {
-			this.key = key;
-			this.value = value;
-		}
-
-		@Override
-		public String getKey() {
-			return key;
-		}
-
-		@Override
-		public String getValue() {
-			return value;
-		}
-
-		@Override
-		public String setValue(String value) {
-			this.value = value;
-			return value;
-		}
-
-		
-	}
-	
 	public boolean containsKey(String name, String unit) {
-		Pair e = new Pair(name,unit);
+		Pair<String, String> e = new Pair<String, String>(name,unit);
 		
 		if (!super.containsKey(e)) {
 			String s = (String)name;
-			if (s.charAt(s.length())=='s') {
-				return super.containsKey(s.substring(0, s.length()-1));
+			if (s.charAt(s.length()-1)=='s') {
+				return super.containsKey(s.substring(0, s.length()-2));
 			} else {
 				return super.containsKey(s+"s");
 			}
@@ -56,7 +26,7 @@ public class Amounts extends HashMap<Entry<String,String>, Float> {
 	}
 
 	public void put(String name, float f, String unit) {
-		Pair e = new Pair(name,unit);
+		Pair<String, String> e = new Pair<String, String>(name,unit);
 		super.put(e, f);
 		
 	}

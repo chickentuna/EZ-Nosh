@@ -30,11 +30,13 @@ public class Controller  {
 		Window view = new Window(bus);
 		bus.register(view);
 		bus.register(this);
+		
 		RecipeManager.get();
 	}
 	
 	@Subscribe
 	public void on(RequestGenerateEvent e) {
+		System.out.println("caught an event");
 		int normals = e.getNormals();
 		int speedies = e.getSpeedies();
 		int picnics = e.getPicnics();
