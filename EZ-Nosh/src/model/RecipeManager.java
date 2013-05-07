@@ -2,8 +2,9 @@ package model;
 
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -35,7 +36,9 @@ public class RecipeManager {
 
 	private void loadRecipes() throws Exception {
 		String fname = "recipes.ez";
-		input = new BufferedReader(new FileReader(fname));
+		input = new BufferedReader(new InputStreamReader(
+                new FileInputStream(fname), "UTF8"));
+		
 		Recipe recip;
 		recip = getNextRecipe();
 		while (recip != null) {
@@ -141,7 +144,8 @@ public class RecipeManager {
 				String unit = i.getUnit().toLowerCase();
 				
 				if (amounts.containsKey(name,unit)) {
-					amounts.put(name, amounts.get(name) + i.getAmount(), unit);
+					System.out.println(amounts);
+					amounts.put(name, amounts.get(name,unit) + i.getAmount(), unit);
 				} else {
 					amounts.put(name, i.getAmount(), unit);
 				}

@@ -12,7 +12,7 @@ public class Amounts extends HashMap<Pair<String,String>, Float> {
 	
 	public boolean containsKey(String name, String unit) {
 		Pair<String, String> e = new Pair<String, String>(name,unit);
-		
+		System.out.println(e);
 		if (!super.containsKey(e)) {
 			String s = (String)name;
 			if (s.charAt(s.length()-1)=='s') {
@@ -29,5 +29,10 @@ public class Amounts extends HashMap<Pair<String,String>, Float> {
 		Pair<String, String> e = new Pair<String, String>(name,unit);
 		super.put(e, f);
 		
+	}
+
+	public float get(String name, String unit) {
+		Pair<String, String> p = new Pair<>(name, unit);
+		return super.get(p);
 	}
 }
