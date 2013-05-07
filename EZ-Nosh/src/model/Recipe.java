@@ -1,6 +1,7 @@
 package model;
 
 import java.util.LinkedList;
+import java.util.List;
 
 
 public class Recipe {
@@ -22,6 +23,10 @@ public class Recipe {
 	public void add(Item i) {
 		items.add(i);
 		
+	}
+	
+	public List<Item> getItems() {
+		return items;
 	}
 	
 	public int getType() {

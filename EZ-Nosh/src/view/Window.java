@@ -24,6 +24,8 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import com.google.common.eventbus.EventBus;
+
 import control.Controller;
 
 
@@ -39,7 +41,10 @@ public class Window {
 	private JPanel panel;
 	
 	/** Control **/
-	public Window() {
+	private EventBus bus ;
+	
+	public Window(EventBus bus) {
+		this.bus = bus;
 		initComponents();
 		initActions();
 		buildFrame();

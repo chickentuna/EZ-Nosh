@@ -4,8 +4,11 @@ package model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 
 
 public class RecipeManager {
@@ -22,6 +25,7 @@ public class RecipeManager {
 	}
 	
 	private LinkedList<Recipe> recipes;
+	private HashMap<Integer, LinkedList<Recipe>> cache;
 	private BufferedReader input;
 	
 	private RecipeManager() throws Exception {
@@ -32,12 +36,36 @@ public class RecipeManager {
 	private void loadRecipes() throws Exception {
 		String fname = "recipes.ez";
 		input = new BufferedReader(new FileReader(fname));
-		Recipe r;
-		r = getNextRecipe();
-		while (r != null) {
-			recipes.add(r);
-			r = getNextRecipe();
+		Recipe recip;
+		recip = getNextRecipe();
+		while (recip != null) {
+			recipes.add(recip);
+			recip = getNextRecipe();
 		}
+		
+		cache = new HashMap<Integer, LinkedList<Recipe>>();
+		cache.put(Recipe.NORMAL, new LinkedList<Recipe>());
+		cache.put(Recipe.SPEEDY, new LinkedList<Recipe>());
+		cache.put(Recipe.PICNIC, new LinkedList<Recipe>());
+		cache.put(Recipe.DESSERT, new LinkedList<Recipe>());
+		
+		Iterator<Recipe> it = recipes.iterator();
+		while (it.hasNext()) {
+			recip = it.next();
+		
+			int [] types = {Recipe.NORMAL, Recipe.SPEEDY, Recipe.PICNIC, Recipe.DESSERT};
+			
+			for (int i = 0; i < types.length; i++) {
+				if (isOfType(recip,types[i])) {
+					cache.get(types[i]).add(recip);
+				}
+			}
+		}
+		
+	}
+
+	private boolean isOfType(Recipe recip, int type) {
+		return (recip.getType() & type) == type;
 	}
 
 	private Recipe getNextRecipe() throws IOException {
@@ -77,15 +105,49 @@ public class RecipeManager {
 	}
 
 	public List<Recipe> getRandomRecipes(int normals, int speedies, int picnics, int desserts) {
+		List<Recipe> random = new LinkedList<Recipe>();
+		
 		for (int k = 0; k<normals; k++) {
-			getRandomRecipe(Recipe.NORMAL);
+			random.add(getRandomRecipe(Recipe.NORMAL));
 		}
-		return null;
+		for (int k = 0; k<speedies; k++) {
+			random.add(getRandomRecipe(Recipe.SPEEDY));
+		}
+		for (int k = 0; k<picnics; k++) {
+			random.add(getRandomRecipe(Recipe.PICNIC));
+		}
+		for (int k = 0; k<desserts; k++) {
+			random.add(getRandomRecipe(Recipe.DESSERT));
+		}
+				
+		return random;
 	}
 
 	private Recipe getRandomRecipe(int type) {
+		LinkedList<Recipe> list = cache.get(type);
+		int index = (int) (Math.random() * list.size());
+		return list.get(index);
+	}
 
-		
+	public Amounts getIngredientsFor(List<Recipe> list) {
+		Amounts amounts = new Amounts();
+		Iterator<Recipe> it = list.iterator();
+		while (it.hasNext()) {
+			Recipe r = it.next();
+			Iterator<Item> ing = r.getItems().iterator();
+			while (ing.hasNext()) {
+				Item i = ing.next();
+				String name = i.getIngredient().toLowerCase();
+				String unit = i.getUnit().toLowerCase();
+				
+				if (amounts.containsKey(name,unit)) {
+					amounts.put(name, amounts.get(name) + i.getAmount(), unit);
+				} else {
+					amounts.put(name, i.getAmount(), unit);
+				}
+			}
+		}
+		return amounts;
 	}
 	
 	
