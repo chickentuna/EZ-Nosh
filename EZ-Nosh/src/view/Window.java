@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,53 +38,53 @@ import events.IngredientsGeneratedEvents;
 import events.RequestGenerateEvent;
 import events.RequestIngedientsEvent;
 import events.SuggestRecipesEvent;
+import javax.swing.border.LineBorder;
+import javax.swing.border.EmptyBorder;
 
 
 public class Window {
 
 	/** Constants **/
-	private static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder(
-			0, 10, 10, 10);
+	private static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder(0, 10, 10, 10);
 	private static final String L_LABEL_TITLE = "EZ-Nosh";
 
 	/** Components **/
 	private JFrame frame;
-	private JPanel panel;
-	private JButton button_test;
-	private JLabel label_test;
+	private ImagePanel panel;
 	
 	/** Control **/
 	private EventBus bus ;
 	
-	public Window(EventBus bus) {
+	public Window(EventBus bus) throws IOException {
 		this.bus = bus;
 		initComponents();
 		initActions();
 		buildFrame();
 	}
 
-	private void buildFrame() {
+	private void buildFrame() throws IOException {
 
 		panel.setPreferredSize(new Dimension(640, 480));
-		panel.setBackground(Color.WHITE);
 		panel.setLayout(new BorderLayout());
 		{
 			// SETUP cpane:top:center_panel:fc_panel
 			JPanel north_panel = new JPanel();
+			north_panel.setOpaque(false);
 			north_panel.setLayout(new BoxLayout(north_panel, BoxLayout.Y_AXIS));
 			{
 				// SETUP cpane:top:center_panel:fc_panel:row0
-				JPanel row_title = new JPanel();
+				JPanel row_title = new ImagePanel("title.png");
+				row_title.setOpaque(false);
 				row_title.setLayout(new BoxLayout(row_title, BoxLayout.X_AXIS));
-				row_title.setBorder(EMPTY_BORDER);
+				row_title.setBorder(new EmptyBorder(0, 0, 0, 0));
 				{
 					JComponent row = row_title;
-					row.add(button_test);
 				}
 				north_panel.add(row_title);
 
 				// SETUP cpane:top:center_panel:fc_panel:row1
 				JPanel row_filechooser = new JPanel();
+				row_filechooser.setOpaque(false);
 				row_filechooser.setLayout(new BoxLayout(row_filechooser,
 						BoxLayout.X_AXIS));
 				row_filechooser.setBorder(EMPTY_BORDER);
@@ -95,8 +96,8 @@ public class Window {
 			panel.add(north_panel, BorderLayout.NORTH);
 
 			JPanel south_panel = new JPanel();
+			south_panel.setOpaque(false);
 			south_panel.setLayout(new BorderLayout());
-			south_panel.add(label_test);
 			panel.add(south_panel, BorderLayout.CENTER);
 		}
 
@@ -109,11 +110,9 @@ public class Window {
 
 	}
 
-	private void initComponents() {
+	private void initComponents() throws IOException {
 		frame = new javax.swing.JFrame();
-		panel = new JPanel();
-		button_test = new JButton("TEST");
-		label_test = new JLabel("---");
+		panel = new ImagePanel("lgreen.jpg", ImagePanel.STRETCH);
 		
 	}
 
@@ -127,12 +126,6 @@ public class Window {
 	}
 
 	private void initActions() {
-		button_test.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				bus.post(new RequestGenerateEvent(2, 0, 0, 0));
-			}
-		});
 	}
 	
 	@Subscribe
@@ -150,7 +143,7 @@ public class Window {
 			Pair<String, String> entry = it.next();
 			text = text + parseEntry(entry, a.get(entry)) + "<br>";
 		}
-		label_test.setText(text+"</html>");
+		//label_test.setText(text+"</html>");
 	}
 
 	private String parseEntry(Pair<String, String> entry, Float value) {

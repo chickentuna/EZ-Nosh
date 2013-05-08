@@ -1,6 +1,7 @@
 package control;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import model.Amounts;
@@ -22,10 +23,14 @@ public class Controller  {
 	private EventBus bus;
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		new Controller();
+		try {
+			new Controller();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public Controller() {
+	public Controller() throws IOException {
 		bus = new EventBus();
 		Window view = new Window(bus);
 		bus.register(view);
