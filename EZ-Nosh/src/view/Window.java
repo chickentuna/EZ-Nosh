@@ -61,10 +61,13 @@ public class Window {
 	private ImagePanel panel;
 	private LinkedList<JSpinner> input;
 	private JButton button_gen;
-	JTextArea recipe_area;
+	JPanel recipe_area;
 	
 	/** Control **/
 	private EventBus bus;
+	private JLabel recipe_text;
+	private JButton b_valider;
+	private JButton b_choose;
 	
 	public Window(EventBus bus) throws IOException {
 		this.bus = bus;
@@ -131,22 +134,40 @@ public class Window {
 				button_gen = new JButton("Générer");
 				registerToEnter(button_gen, JComponent.WHEN_IN_FOCUSED_WINDOW);
 				button_gen.setFont(new Font("Arial", Font.BOLD,24));
+				button_gen.setMaximumSize(new Dimension(200,200));
 				center_panel.add(button_gen, BorderLayout.CENTER);
 
 			}
 			panel.add(center_panel, BorderLayout.CENTER);
 			JPanel east_panel = new JPanel();
-			east_panel.setLayout(new BoxLayout(east_panel, BoxLayout.Y_AXIS));
+			east_panel.setLayout(new BorderLayout());
 			{
 				east_panel.setOpaque(false);
-				recipe_area = new JTextArea(20,34);
-				recipe_area.setText("*******Recettes*******");
-				recipe_area.setEditable(false);
-				recipe_area.setBorder(new LineBorder(Color.ORANGE, 4));
 				
-				JScrollPane orange = new JScrollPane(recipe_area);
+				recipe_area = new JPanel();//TextArea(20,34);
+				{
+					recipe_area.setPreferredSize(new Dimension(380,0));
+					//recipe_area.setOpaque(false);
+					recipe_area.setBorder(new LineBorder(Color.ORANGE, 4));
+					recipe_area.setBackground(new Color(255, 152, 83));
+					recipe_area.setLayout(new BoxLayout(recipe_area, BoxLayout.Y_AXIS));
+					recipe_text = new JLabel();
+					recipe_area.add(recipe_text);
+
+					
+				}
+				east_panel.add(recipe_area, BorderLayout.CENTER);
+				JPanel b_panel = new JPanel();
+				{
+					b_panel.setLayout(new FlowLayout());
+					b_valider = new JButton("Valider");
+					b_choose = new JButton("Choisir");
+					b_panel.add(b_valider);
+					b_panel.add(b_choose);
+					b_panel.setOpaque(false);
+				}
+				east_panel.add(b_panel, BorderLayout.SOUTH);
 				
-				east_panel.add(orange);
 			}
 			panel.add(east_panel, BorderLayout.EAST);
 			
@@ -220,8 +241,12 @@ public class Window {
 				
 				//t -= d;
 				int n = t - s - p - f; 
+				recipe_area.add(new JLabel("Floub"));
+				recipe_area.validate();
+				recipe_area.repaint();
 				
-				bus.post(new RequestGenerateEvent(n, s, p, f, d));
+				
+				//bus.post(new RequestGenerateEvent(n, s, p, f, d));
 			}
 		});
 	}
@@ -230,11 +255,12 @@ public class Window {
 	public void on(SuggestRecipesEvent e) {
 		List<Recipe> sugg = e.getList();
 		Iterator<Recipe> it = sugg.iterator();
-		recipe_area.setText(" Suggestions:\n");
+		recipe_text.setText(("<html>\t\tSuggestions :"));
 		while (it.hasNext()) {
 			Recipe rec = it.next();
-			recipe_area.append("   "+rec.toString()+"\n");
+			recipe_text.setText(recipe_text.getText()+"<br>\t"+rec);
 		}
+		recipe_text.setText(recipe_text.getText()+"</html>");
 		
 		
 		bus.post(new RequestIngedientsEvent(e.getList()));
