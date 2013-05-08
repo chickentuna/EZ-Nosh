@@ -82,6 +82,9 @@ public class Window {
 			{
 				// SETUP cpane:top:center_panel:fc_panel:row0
 				JPanel row_title = new ImagePanel("title.png");
+				//row_title.setAlignmentX(Component.CENTER_ALIGNMENT);
+				//north_panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+				
 				north_panel
 						.add(new Box.Filler(null, new Dimension(0, 10), null));
 				north_panel.add(row_title);
@@ -96,7 +99,7 @@ public class Window {
 				south_panel.setOpaque(false);
 
 				JPanel panel_1 = new JPanel();
-				panel_1.setAlignmentX(Component.LEFT_ALIGNMENT);
+				//panel_1.setAlignmentX(Component.LEFT_ALIGNMENT);
 				panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
 
 				addField(panel_1, "Nombres de repas à prévoir : ", 25);
@@ -111,7 +114,7 @@ public class Window {
 				panel_1.add(tomato);
 
 				panel_1.setOpaque(false);
-				south_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+				//south_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 				south_panel.add(panel_1, BorderLayout.CENTER);
 			}
 			panel.add(south_panel, BorderLayout.CENTER);
@@ -152,7 +155,7 @@ public class Window {
 			panel_3.setOpaque(false);
 			JLabel label = new JLabel(string);
 			label.setFont(new Font("Serif", Font.PLAIN, size));
-			label.setAlignmentX(Component.LEFT_ALIGNMENT);
+			//label.setAlignmentX(Component.LEFT_ALIGNMENT);
 			panel_3.add(new Box.Filler(null, null, new Dimension(offset, 0)));
 			panel_3.add(label);
 			panel_3.add(new Box.Filler(null, null, BOX_DIMENSION));

@@ -37,9 +37,9 @@ public class ImagePanel extends JPanel {
 		
 		Dimension size = new Dimension((int)x, (int)y);
 		setPreferredSize(size);
-		//setMinimumSize(size);
-		//setMaximumSize(size);
-		//setSize(size);
+		setMinimumSize(size);
+		setMaximumSize(size);
+		setSize(size);
 		}
 
 	public void paintComponent(Graphics g) {
