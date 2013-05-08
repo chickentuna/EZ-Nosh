@@ -31,13 +31,16 @@ public class ImagePanel extends JPanel {
 	public ImagePanel(Image img, int mode) {
 		this.mode = mode;
 		this.img = img;
-		Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
+		
+		double x = Math.min(200,img.getWidth(null));
+		double y = Math.min(200,img.getHeight(null));
+		
+		Dimension size = new Dimension((int)x, (int)y);
 		setPreferredSize(size);
-		setMinimumSize(size);
-		setMaximumSize(size);
-		setSize(size);
-		setLayout(null);
-	}
+		//setMinimumSize(size);
+		//setMaximumSize(size);
+		//setSize(size);
+		}
 
 	public void paintComponent(Graphics g) {
 		if (mode == CROP) {

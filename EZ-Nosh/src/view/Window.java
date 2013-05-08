@@ -117,7 +117,11 @@ public class Window {
 			panel.add(south_panel, BorderLayout.CENTER);
 			JPanel east_panel = new JPanel();
 			{
-			
+				east_panel.setOpaque(false);
+				
+				JPanel orange = new ImagePanel("orange.jpg", ImagePanel.STRETCH);
+				
+				east_panel.add(orange);
 			}
 			panel.add(east_panel, BorderLayout.EAST);
 			
