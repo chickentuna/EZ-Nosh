@@ -26,27 +26,27 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 
 import model.Amounts;
 import model.Pair;
+import model.Recipe;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import control.Controller;
 import events.IngredientsGeneratedEvents;
 import events.RequestGenerateEvent;
 import events.RequestIngedientsEvent;
 import events.SuggestRecipesEvent;
 import javax.swing.border.LineBorder;
-import javax.swing.border.EmptyBorder;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
+
 
 public class Window {
 
@@ -59,70 +59,92 @@ public class Window {
 	/** Components **/
 	private JFrame frame;
 	private ImagePanel panel;
-
+	private LinkedList<JSpinner> input;
+	private JButton button_gen;
+	JTextArea recipe_area;
+	
 	/** Control **/
 	private EventBus bus;
-
+	
 	public Window(EventBus bus) throws IOException {
 		this.bus = bus;
 		initComponents();
-		initActions();
 		buildFrame();
+		initActions();
 	}
 
 	private void buildFrame() throws IOException {
 
-		panel.setPreferredSize(new Dimension(640, 480));
+		panel.setPreferredSize(new Dimension(640, 540));
 		panel.setLayout(new BorderLayout());
 		{
-			// SETUP cpane:top:center_panel:fc_panel
+			
 			JPanel north_panel = new JPanel();
 			north_panel.setOpaque(false);
 			north_panel.setLayout(new BoxLayout(north_panel, BoxLayout.Y_AXIS));
 			{
-				// SETUP cpane:top:center_panel:fc_panel:row0
+				
 				JPanel row_title = new ImagePanel("title.png");
-				//row_title.setAlignmentX(Component.CENTER_ALIGNMENT);
-				//north_panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+				row_title.setAlignmentX(Component.CENTER_ALIGNMENT);
 				
 				north_panel
 						.add(new Box.Filler(null, new Dimension(0, 10), null));
 				north_panel.add(row_title);
 				north_panel
 						.add(new Box.Filler(null, new Dimension(0, 30), null));
+				addField(north_panel, "Nombres de repas à prévoir : ", 25);
 			}
 			panel.add(north_panel, BorderLayout.NORTH);
 
-			JPanel south_panel = new JPanel();
+			JPanel center_panel = new JPanel();
 			{
-				south_panel.setLayout(new BorderLayout());
-				south_panel.setOpaque(false);
+				center_panel.setLayout(new BorderLayout());
+				center_panel.setOpaque(false);
 
 				JPanel panel_1 = new JPanel();
 				//panel_1.setAlignmentX(Component.LEFT_ALIGNMENT);
 				panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
 
-				addField(panel_1, "Nombres de repas à prévoir : ", 25);
+				
 				panel_1.add(new Box.Filler(null, null, new Dimension(0, 10)));
 				addField(20, panel_1, "Rapide :");
-				addField(20, panel_1, "Picnic :");
+				addField(20, panel_1, "À emporter :");
 				addField(20, panel_1, "Chic :");
 				addField(20, panel_1, "Desserts :");
 
-				ImagePanel tomato = new ImagePanel("tomato.png");
-				tomato.setAlignmentX(Component.LEFT_ALIGNMENT);
-				panel_1.add(tomato);
-
+				JPanel panel_tomato = new JPanel(); 
+				{
+					panel_tomato.setLayout(new BoxLayout(panel_tomato, BoxLayout.X_AXIS));
+					panel_tomato.setOpaque(false);
+					ImagePanel tomato = new ImagePanel("tomato.png");
+					tomato.setAlignmentX(Component.LEFT_ALIGNMENT);
+					//panel_tomato.setAlignmentX(Component.LEFT_ALIGNMENT);
+					panel_tomato.add(new Box.Filler(null, null, BOX_DIMENSION));
+					panel_tomato.add(tomato);
+					panel_tomato.setAlignmentX(Component.LEFT_ALIGNMENT);
+				}
+				panel_1.add(panel_tomato);
 				panel_1.setOpaque(false);
 				//south_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-				south_panel.add(panel_1, BorderLayout.CENTER);
+				center_panel.add(panel_1, BorderLayout.NORTH);
+				
+				button_gen = new JButton("Générer");
+				registerToEnter(button_gen, JComponent.WHEN_IN_FOCUSED_WINDOW);
+				button_gen.setFont(new Font("Arial", Font.BOLD,24));
+				center_panel.add(button_gen, BorderLayout.CENTER);
+
 			}
-			panel.add(south_panel, BorderLayout.CENTER);
+			panel.add(center_panel, BorderLayout.CENTER);
 			JPanel east_panel = new JPanel();
+			east_panel.setLayout(new BoxLayout(east_panel, BoxLayout.Y_AXIS));
 			{
 				east_panel.setOpaque(false);
+				recipe_area = new JTextArea(20,34);
+				recipe_area.setText("*******Recettes*******");
+				recipe_area.setEditable(false);
+				recipe_area.setBorder(new LineBorder(Color.ORANGE, 4));
 				
-				JPanel orange = new ImagePanel("orange.jpg", ImagePanel.STRETCH);
+				JScrollPane orange = new JScrollPane(recipe_area);
 				
 				east_panel.add(orange);
 			}
@@ -137,6 +159,13 @@ public class Window {
 		frame.setLocationRelativeTo(null);
 		frame.setTitle(TITLE);
 
+	}
+
+	private void initComponents() throws IOException {
+		frame = new javax.swing.JFrame();
+		panel = new ImagePanel("lgreen.jpg", ImagePanel.STRETCH);
+		input = new LinkedList<JSpinner>(); 
+	
 	}
 
 	private void addField(int offset, JPanel panel_1, String string) {
@@ -159,7 +188,8 @@ public class Window {
 			panel_3.add(new Box.Filler(null, null, new Dimension(offset, 0)));
 			panel_3.add(label);
 			panel_3.add(new Box.Filler(null, null, BOX_DIMENSION));
-			JTextField field = new JTextField("0");
+			JSpinner field = new JSpinner(new SpinnerNumberModel(0,0,99,1));
+			input.add(field);
 			field.setMaximumSize(FIELD_DIMENSION);
 			panel_3.add(field);
 		}
@@ -167,12 +197,6 @@ public class Window {
 
 		panel_1.add(panel_3);
 		panel_1.add(new Box.Filler(null, null, new Dimension(0, 10)));
-	}
-
-	private void initComponents() throws IOException {
-		frame = new javax.swing.JFrame();
-		panel = new ImagePanel("lgreen.jpg", ImagePanel.STRETCH);
-
 	}
 
 	private void registerToEnter(JButton button, int condition) {
@@ -185,11 +209,34 @@ public class Window {
 	}
 
 	private void initActions() {
+		button_gen.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int t = (int) input.get(0).getValue();
+				int s = (int) input.get(1).getValue();
+				int p = (int) input.get(2).getValue();
+				int f = (int) input.get(3).getValue();
+				int d = (int) input.get(4).getValue();
+				
+				//t -= d;
+				int n = t - s - p - f; 
+				
+				bus.post(new RequestGenerateEvent(n, s, p, f, d));
+			}
+		});
 	}
 
 	@Subscribe
 	public void on(SuggestRecipesEvent e) {
-		System.out.println("Recipes suggested ");
+		List<Recipe> sugg = e.getList();
+		Iterator<Recipe> it = sugg.iterator();
+		recipe_area.setText(" Suggestions:\n");
+		while (it.hasNext()) {
+			Recipe rec = it.next();
+			recipe_area.append("   "+rec.toString()+"\n");
+		}
+		
+		
 		bus.post(new RequestIngedientsEvent(e.getList()));
 	}
 

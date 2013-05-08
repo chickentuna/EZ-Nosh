@@ -107,20 +107,19 @@ public class RecipeManager {
 		return i;
 	}
 
-	public List<Recipe> getRandomRecipes(int normals, int speedies, int picnics, int desserts) {
+	public List<Recipe> getRandomRecipes(int normals, int speedies, int picnics, int fancies, int desserts) {
 		List<Recipe> random = new LinkedList<Recipe>();
 		
-		for (int k = 0; k<normals; k++) {
-			random.add(getRandomRecipe(Recipe.NORMAL));
-		}
-		for (int k = 0; k<speedies; k++) {
-			random.add(getRandomRecipe(Recipe.SPEEDY));
-		}
-		for (int k = 0; k<picnics; k++) {
-			random.add(getRandomRecipe(Recipe.PICNIC));
-		}
-		for (int k = 0; k<desserts; k++) {
-			random.add(getRandomRecipe(Recipe.DESSERT));
+		int [] types = {Recipe.NORMAL, Recipe.SPEEDY, Recipe.PICNIC, Recipe.FANCY, Recipe.DESSERT};
+		int [] needs = {normals, speedies, picnics, fancies, desserts};
+		
+		
+		for (int i = 0; i < types.length; i++) {
+			for (int k = 0; k<needs[i]; k++) {
+				Recipe rec = getRandomRecipe(types[i]);
+				if (rec !=null)
+					random.add(rec);
+			}
 		}
 				
 		return random;
@@ -128,7 +127,11 @@ public class RecipeManager {
 
 	private Recipe getRandomRecipe(int type) {
 		LinkedList<Recipe> list = cache.get(type);
+		if (list== null || list.size()==0)
+			return null;
+		
 		int index = (int) (Math.random() * list.size());
+		
 		return list.get(index);
 	}
 
@@ -144,7 +147,6 @@ public class RecipeManager {
 				String unit = i.getUnit().toLowerCase();
 				
 				if (amounts.containsKey(name,unit)) {
-					System.out.println(amounts);
 					amounts.put(name, amounts.get(name,unit) + i.getAmount(), unit);
 				} else {
 					amounts.put(name, i.getAmount(), unit);

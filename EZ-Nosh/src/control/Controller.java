@@ -41,13 +41,13 @@ public class Controller  {
 	
 	@Subscribe
 	public void on(RequestGenerateEvent e) {
-		System.out.println("caught an event");
 		int normals = e.getNormals();
 		int speedies = e.getSpeedies();
 		int picnics = e.getPicnics();
 		int desserts = e.getDesserts();
+		int fancies = e.getFancies();
 		
-		List<Recipe> list = RecipeManager.get().getRandomRecipes(normals, speedies, picnics, desserts);
+		List<Recipe> list = RecipeManager.get().getRandomRecipes(normals, speedies, picnics, fancies, desserts);
 		bus.post(new SuggestRecipesEvent(list));
 	}
 	

@@ -32,8 +32,8 @@ public class ImagePanel extends JPanel {
 		this.mode = mode;
 		this.img = img;
 		
-		double x = Math.min(200,img.getWidth(null));
-		double y = Math.min(200,img.getHeight(null));
+		double x = Math.min(400,img.getWidth(null));
+		double y = Math.min(300,img.getHeight(null));
 		
 		Dimension size = new Dimension((int)x, (int)y);
 		setPreferredSize(size);

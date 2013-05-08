@@ -38,5 +38,8 @@ public class Recipe {
 	public int getType() {
 		return type;
 	}
+	public String toString() {
+		return name;
+	}
 
 }
