@@ -12,8 +12,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import events.IngredientsGeneratedEvents;
+import events.RequestDiceEvent;
 import events.RequestGenerateEvent;
 import events.RequestIngedientsEvent;
+import events.RollDiceEvent;
 import events.SuggestRecipesEvent;
 
 import view.Window;
@@ -54,9 +56,21 @@ public class Controller  {
 	@Subscribe
 	public void on(RequestIngedientsEvent e) {
 		List<Recipe> list = e.getList();
+		System.out.println(list);
 		Amounts ings = RecipeManager.get().getIngredientsFor(list);
+		System.out.println(ings);
+		
 		bus.post(new IngredientsGeneratedEvents(ings));
+
 	}
 
+	@Subscribe
+	public void on(RequestDiceEvent e) {
+		
+		Recipe r = RecipeManager.get().getRandomRecipe(e.getRecipePointer().getRecipe().getStrongType());
+		System.out.println(e.getRecipePointer().getRecipe());
+		System.out.println(e.getRecipePointer().getRecipe().getStrongType());
+		bus.post(new RollDiceEvent(e.getRecipePointer(), r));
+	}
 	
 }

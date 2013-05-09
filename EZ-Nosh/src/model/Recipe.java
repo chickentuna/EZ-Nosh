@@ -14,12 +14,18 @@ public class Recipe {
 	private String name;
 	private LinkedList<Item> items;
 	private int type;
+	private int strongType;
 	
 	
 	public Recipe(String name, int type) {
+		this(name, type, 0);
+	}
+
+	public Recipe(String name, int type, int strongType) {
 		this.name= name;
 		items = new LinkedList<Item>();
 		this.type = type;
+		this.strongType = strongType;
 	}
 
 	public void add(Item i) {
@@ -38,8 +44,23 @@ public class Recipe {
 	public int getType() {
 		return type;
 	}
+	
+	public int getStrongType() {
+		return strongType;
+	}
+	
 	public String toString() {
 		return name;
+	}
+
+	public Recipe clone(int type2) {
+		Recipe r = new Recipe(getName(), getType(), type2);
+		r.setItems(items);
+		return r;
+	}
+	
+	public void setItems(LinkedList<Item> items) {
+		this.items = items;
 	}
 
 }

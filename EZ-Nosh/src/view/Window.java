@@ -42,8 +42,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import events.IngredientsGeneratedEvents;
+import events.RequestDiceEvent;
 import events.RequestGenerateEvent;
 import events.RequestIngedientsEvent;
+import events.RollDiceEvent;
 import events.SuggestRecipesEvent;
 import javax.swing.border.LineBorder;
 
@@ -61,7 +63,7 @@ public class Window {
 	private ImagePanel panel;
 	private LinkedList<JSpinner> input;
 	private JButton button_gen;
-	JPanel recipe_area;
+	YumPanel recipe_area;
 	
 	/** Control **/
 	private EventBus bus;
@@ -144,16 +146,16 @@ public class Window {
 			{
 				east_panel.setOpaque(false);
 				
-				recipe_area = new JPanel();//TextArea(20,34);
+				recipe_area = new YumPanel();
 				{
 					recipe_area.setPreferredSize(new Dimension(380,0));
 					//recipe_area.setOpaque(false);
 					recipe_area.setBorder(new LineBorder(Color.ORANGE, 4));
 					recipe_area.setBackground(new Color(255, 152, 83));
 					recipe_area.setLayout(new BoxLayout(recipe_area, BoxLayout.Y_AXIS));
-					recipe_text = new JLabel();
-					recipe_area.add(recipe_text);
-
+					/*recipe_text = new JLabel();
+					recipe_area.add(recipe_text);*/
+					
 					
 				}
 				east_panel.add(recipe_area, BorderLayout.CENTER);
@@ -205,11 +207,10 @@ public class Window {
 			panel_3.setOpaque(false);
 			JLabel label = new JLabel(string);
 			label.setFont(new Font("Serif", Font.PLAIN, size));
-			//label.setAlignmentX(Component.LEFT_ALIGNMENT);
 			panel_3.add(new Box.Filler(null, null, new Dimension(offset, 0)));
 			panel_3.add(label);
 			panel_3.add(new Box.Filler(null, null, BOX_DIMENSION));
-			JSpinner field = new JSpinner(new SpinnerNumberModel(0,0,99,1));
+			JSpinner field = new JSpinner(new SpinnerNumberModel(0,0,15,1));
 			input.add(field);
 			field.setMaximumSize(FIELD_DIMENSION);
 			panel_3.add(field);
@@ -230,6 +231,13 @@ public class Window {
 	}
 
 	private void initActions() {
+		b_valider.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				bus.post(new RequestIngedientsEvent(recipe_area.getRecipes()));
+			}
+		});
+		
 		button_gen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -238,15 +246,9 @@ public class Window {
 				int p = (int) input.get(2).getValue();
 				int f = (int) input.get(3).getValue();
 				int d = (int) input.get(4).getValue();
+				int n = t - s - p - f;
 				
-				//t -= d;
-				int n = t - s - p - f; 
-				recipe_area.add(new JLabel("Floub"));
-				recipe_area.validate();
-				recipe_area.repaint();
-				
-				
-				//bus.post(new RequestGenerateEvent(n, s, p, f, d));
+				bus.post(new RequestGenerateEvent(n, s, p, f, d));
 			}
 		});
 	}
@@ -255,31 +257,128 @@ public class Window {
 	public void on(SuggestRecipesEvent e) {
 		List<Recipe> sugg = e.getList();
 		Iterator<Recipe> it = sugg.iterator();
-		recipe_text.setText(("<html>\t\tSuggestions :"));
+		
+		recipe_area.removeAll();
+		//recipe_area.add(new JLabel("<html>Suggestions : </html>"));
+		
+		int current_type = -1;
+		String[] names = {"normales", "rapides", "pique-niques", "chics", "de desserts"};
+		
 		while (it.hasNext()) {
 			Recipe rec = it.next();
-			recipe_text.setText(recipe_text.getText()+"<br>\t"+rec);
-		}
-		recipe_text.setText(recipe_text.getText()+"</html>");
+			int t = rec.getStrongType();
+			if (current_type != t) {
+				current_type = t;
+				int k = -1;
+				switch(t) {
+				case Recipe.NORMAL:
+					k=0;
+					break;
+				case Recipe.SPEEDY:
+					k=1;
+					break;
+				case Recipe.PICNIC:
+					k=2;
+					break;
+				case Recipe.FANCY:
+					k=3;
+					break;
+				case Recipe.DESSERT:
+					k=4;
+					break;
+				}
+				JLabel l = new JLabel("Recettes "+ names[k] +" :");
+				recipe_area.add(l);
+			}
+			final YumPanel panel_r = new YumPanel();
+			{
+				panel_r.setOpaque(false);
+				panel_r.setLayout(new BoxLayout(panel_r, BoxLayout.X_AXIS));
+				RecipeLabel rl = new RecipeLabel(rec);
+				panel_r.add(rl);
+				BrocoliButton b = new BrocoliButton(rl);
+				DiceButton d = new DiceButton(rl);
+				
+				b.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						recipe_area.remove(panel_r);
+						recipe_area.validate();
+						recipe_area.repaint();
+					}
+				});
+				
+				final RecipePointer rp = new RecipePointer(rl, b, d);
+				
+				d.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						bus.post(new RequestDiceEvent(rp));
+					}
+				});
+				
+				panel_r.add(b);
+				panel_r.add(d);
+				
+			}
+			recipe_area.add(panel_r);
+		}		
 		
-		
-		bus.post(new RequestIngedientsEvent(e.getList()));
+		recipe_area.validate();
+		recipe_area.repaint();		
 	}
 
 	@Subscribe
 	public void on(IngredientsGeneratedEvents e) {
-		String text = "<html>";
+		String text = "";
 		Amounts a = e.getIngredients();
+		
 		Iterator<Pair<String, String>> it = a.keySet().iterator();
 		while (it.hasNext()) {
 			Pair<String, String> entry = it.next();
-			text = text + parseEntry(entry, a.get(entry)) + "<br>";
+			Float f = a.get(entry);
+			String str ;
+			if (f.intValue()==f) {
+				str = ""+f.intValue();
+			} else {
+				str = ""+(f.intValue()+1);
+			}
+			text = text + parseEntry(entry, str) + "\n";
 		}
-		// label_test.setText(text+"</html>");
+		//text = text + "</html>";
+		
+		JFrame Iframe = new JFrame();
+		JPanel Ipanel = new JPanel();
+		Ipanel.setLayout(new FlowLayout());
+		JTextArea lab = new JTextArea(text);
+		
+		lab.setBackground(Color.white);
+		
+		Ipanel.add(lab);
+		Ipanel.setBackground(Color.white);
+		
+		Iframe.setContentPane(Ipanel);
+		Iframe.pack();
+		Iframe.setVisible(true);
+		//Iframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Iframe.setLocationRelativeTo(null);
+		Iframe.setTitle(TITLE);
+		
 	}
 
-	private String parseEntry(Pair<String, String> entry, Float value) {
-		return entry.getKey() + " : " + value + entry.getValue();
+	@Subscribe
+	public void on(RollDiceEvent e) {
+		RecipePointer rp = e.getRecipePointer();
+		RecipeLabel rl = rp.getLabel();
+		rl.setRecipe(e.getRecipe());
+		recipe_area.validate();
+		recipe_area.repaint();
+		System.out.println(rp.getRecipe() + " -> "+rl.getText());
+		
+	}
+	
+	private String parseEntry(Pair<String, String> entry, String str) {
+		return entry.getKey() + " : " + str + entry.getValue();
 	}
 
 }

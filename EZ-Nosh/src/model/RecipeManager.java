@@ -125,14 +125,16 @@ public class RecipeManager {
 		return random;
 	}
 
-	private Recipe getRandomRecipe(int type) {
+	public Recipe getRandomRecipe(int type) {
 		LinkedList<Recipe> list = cache.get(type);
 		if (list== null || list.size()==0)
 			return null;
 		
 		int index = (int) (Math.random() * list.size());
 		
-		return list.get(index);
+		Recipe r = list.get(index);
+		
+		return r.clone(type);
 	}
 
 	public Amounts getIngredientsFor(List<Recipe> list) {
