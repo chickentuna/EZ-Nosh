@@ -307,7 +307,7 @@ public class Window {
 		while (it.hasNext()) {
 			Recipe rec = it.next();
 			int t = rec.getStrongType();
-			/*if (current_type != t) {
+			if (current_type != t) {
 				current_type = t;
 				int k = -1;
 				switch(t) {
@@ -327,9 +327,11 @@ public class Window {
 					k=4;
 					break;
 				}
-				JLabel l = new JLabel("Recettes "+ names[k] +" :");
-				recipe_area.add(l);
-			}*/
+				if (!e.isAppend()) {
+					JLabel l = new JLabel("Recettes "+ names[k] +" :");
+					recipe_area.add(l);
+				}
+			}
 			final YumPanel panel_r = new YumPanel();
 			{
 				panel_r.setOpaque(false);
