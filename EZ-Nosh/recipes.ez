@@ -1,14 +1,254 @@
 Croques Madames
 3
-Jambon, 4, tranche
+jambon, 4, tranches
 Pain de mie, 1, paquet
-Oeuf, 4
+Oeufs, 4
 Fromage pour croque, 1, paquet
 *
 Oeufs farcis
-1
+17
 Jambon, 2, tranches
 Crème fraiche, 1, pot
 Oeuf, 6
 Tomacoli, 1, petit pot
 *
+Pizza maison
+1
+Pâte à pizza, 1
+Tomacouli, 1, petit pot
+Champignons frais, 0.5, boîte
+Lardons, 1, paquet
+Fromage râpé, 0.5, paquet
+Fromage de chèvre, 0.5, paquet
+*
+Viande forestière et patates
+1
+Viande, 2, portions
+Crème fraiche, 0.5, pot
+Champignons frais, 0.5, boîte
+Oignon, 1
+pommes de terre, 4
+*
+Viande forestière et pâtes
+1
+Viande, 2, portions
+Crème fraiche, 0.5, pot
+Champignons frais, 0.5, boîte
+Oignon, 1
+Pâtes, 250, grammes
+*
+Pâtes bolognaise
+3
+Sauce bolognaise, 1, pot
+Pâtes, 250, grammes
+*
+Pâtes carbonara
+3
+Pâtes, 250, grammes
+lardons, 1, paquet
+Crème fraiche, 0.5, pot
+*
+Poulet et riz complet
+1
+riz complet, 200, grammes
+poulet, 2, cuisses
+*
+Saucisson brioché
+17
+Saucisson à cuire, 1
+oeuf, 3
+levure chimique, 1, sachet
+farine, 200, grammes
+crème fraiche, 1, pot
+salade, 1
+*
+Salade d'été complète
+3
+haricots verts, 1, boîte
+thon, 1, boîte
+tomate, 1
+*
+Samon au quinoa rouge
+1
+Saumon, 1, tranche
+Quinoa, 200, grammes
+poivron rouge, 2
+*
+Blanquette de veau
+17
+Veau, 1, kilo
+carotte, 1
+gros oignon, 1
+champignons frais, 0.5, boîte
+crème fraiche, 1, pot
+farine, 200, grammes
+vin blanc, 25, cl
+*
+Risotto
+1
+riz complet, 200, grammes
+petits pois, 1, portion
+champignons frais, 0.5, boîte
+oignon, 1
+lardon, 1, boîte
+*
+Légumière et viande
+1
+pommes de terre, 6
+tomate, 5
+oignon, 2
+haricots verts, 1, boîte
+viande, 2, portion
+*
+Gratin de pommes de terre - chou-fleur
+1
+pommes de terre, 6
+chou-fleur, 0.5
+crème fraiche, 0.5, pot
+fromage râpé, 0.5, paquet
+*
+Tarte/Tartelettes aux courgettes
+17
+pâte feuilletée, 1
+courgettes, 3
+oignon, 1
+oeufs, 2
+*
+Apéro Dînatoire
+17
+carottes, 3
+tomates, 4
+radis, 1, portion
+fenouil, 2
+pommes de terre, 4
+concombre,1
+poivrons, 2
+pain, 1
+salade verte, 1
+boeuf, 1, part
+tapenade verte ou noire, 1, boite
+fromage blanc, 1, pot
+roquefort, 0.25, paquet
+persil, 1
+ciboulette, 1
+ail, 1, gousse
+*
+Burgers - Frites Rapides
+3
+burgers surgelés, 4
+frites spéciales mircro-ondes, 2, boites
+*
+Purée de carottes
+7
+carottes, 5
+oignon, 1
+*
+Crumble de légumes
+21
+poivrons, 2
+courgette,1
+oignons,2
+parmesan, 100, grammes
+*
+Quiche lorraine
+5
+pâte brisée, 1
+lardons, 1, paquet
+crème fraîche, 0.5, boite
+oeuf, 1
+*
+Poisson pané - haricots
+7
+poissons panés surgelés, 4
+haricots verts, 1, boite
+*
+Soupe de pâtes
+3
+pâtes à potage, 1, paquet
+*
+Soupe de tomates
+17
+pommes de terre, 3
+oignons, 2
+tomates entières pelées, 1, boite
+*
+Pâtes Bolognaise Maison
+oignon, 1
+boeuf haché, 700, grammes
+tomates entières pelées, 1, boite
+*
+Oeufs à la coque
+19
+oeufs, 4
+pain, 1
+salade verte, 1
+*
+Bohémienne
+5
+oignons, 2
+aubergines, 2
+tomates, 5
+*
+Mousse au chocolat
+8
+chocolat, 1, tablette
+oeufs, 6
+*
+Tarte/Tartelettes aux pommes
+8
+pâte sablée, 1
+pommes, 5
+*
+Crumble aux pommes
+8
+pommes, 4
+beurre, 40, grammes
+*
+Muffins au chocolat
+8
+oeuf, 1
+levure chimique, 0.5, sachet
+chocolat, 100, grammes
+*
+Cake aux olives
+21
+oeufs, 4
+vin blanc, 1, boite
+olives vertes dénoyautées, 200, grammes
+dés de jambon, 200, grammes
+levure chimique, 1, sachet
+*
+Gateau à la confiture
+8
+levure chimique, 1, sachet
+sucre vanillé, 1, sachet
+oeufs, 2
+confiture, 1
+*
+Tarte/Tartelettes aux framboises
+8
+pâte sablée
+framboises surgelées, 1, paquet
+*
+Gauffres
+8
+oeufs, 4
+beurre, 75, grammes
+levure chimique, 1, sachet
+sucre vanillé, 2, sachets
+rhum, 1
+*
+Gateau aux raisins
+8
+raisins sec, 250, grammes
+rhum, 2, cl
+oeufs, 3
+beurre, 200, grammes
+levure chimique, 0.5, sachet
+*
+Sushi/Chirachi au Saumon
+21
+saumon, 2, portions
+riz de camargue, 1, paquet
+*
+
