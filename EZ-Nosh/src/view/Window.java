@@ -37,15 +37,18 @@ import javax.swing.SpinnerNumberModel;
 import model.Amounts;
 import model.Pair;
 import model.Recipe;
+import model.RecipeManager;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import events.IngredientsGeneratedEvents;
+import events.RequestChooseEvent;
 import events.RequestDiceEvent;
 import events.RequestGenerateEvent;
 import events.RequestIngedientsEvent;
 import events.RollDiceEvent;
+import events.SuggestAllEvent;
 import events.SuggestRecipesEvent;
 import javax.swing.border.LineBorder;
 
@@ -238,6 +241,39 @@ public class Window {
 			}
 		});
 		
+		b_choose.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				bus.post(new RequestChooseEvent());
+				List<Recipe> recs = RecipeManager.get().getAllRecipes();
+				
+				JFrame Iframe = new JFrame();
+				JPanel Ipanel = new JPanel();
+				Ipanel.setLayout(new FlowLayout());
+				Ipanel.setBackground(Color.white);
+					
+				Iterator<Recipe> it = recs.iterator();
+				while (it.hasNext()) {
+					Recipe r = it.next();
+					JButton b = new ChooseButton(r, bus);
+					
+					//b.addActionListener();
+					
+					Ipanel.add(b);
+					
+				}
+
+
+				Iframe.setContentPane(Ipanel);
+				Iframe.setSize(640,480);
+				Iframe.setVisible(true);
+				//Iframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				Iframe.setLocationRelativeTo(null);
+				Iframe.setTitle(TITLE);
+				
+			}
+		});
+		
 		button_gen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -253,12 +289,16 @@ public class Window {
 		});
 	}
 
+	
+	
 	@Subscribe
 	public void on(SuggestRecipesEvent e) {
 		List<Recipe> sugg = e.getList();
 		Iterator<Recipe> it = sugg.iterator();
 		
-		recipe_area.removeAll();
+		if (!e.isAppend()) {
+			recipe_area.removeAll();
+		}
 		//recipe_area.add(new JLabel("<html>Suggestions : </html>"));
 		
 		int current_type = -1;
@@ -267,7 +307,7 @@ public class Window {
 		while (it.hasNext()) {
 			Recipe rec = it.next();
 			int t = rec.getStrongType();
-			if (current_type != t) {
+			/*if (current_type != t) {
 				current_type = t;
 				int k = -1;
 				switch(t) {
@@ -289,7 +329,7 @@ public class Window {
 				}
 				JLabel l = new JLabel("Recettes "+ names[k] +" :");
 				recipe_area.add(l);
-			}
+			}*/
 			final YumPanel panel_r = new YumPanel();
 			{
 				panel_r.setOpaque(false);

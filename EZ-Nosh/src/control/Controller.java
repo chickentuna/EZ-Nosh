@@ -12,6 +12,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import events.IngredientsGeneratedEvents;
+import events.RequestChooseEvent;
 import events.RequestDiceEvent;
 import events.RequestGenerateEvent;
 import events.RequestIngedientsEvent;
@@ -64,6 +65,11 @@ public class Controller  {
 
 	}
 
+	@Subscribe
+	public void on(RequestChooseEvent e) {
+		
+	}
+	
 	@Subscribe
 	public void on(RequestDiceEvent e) {
 		

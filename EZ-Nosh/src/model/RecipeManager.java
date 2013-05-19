@@ -157,6 +157,11 @@ public class RecipeManager {
 		}
 		return amounts;
 	}
+
+	public List<Recipe> getAllRecipes() {
+		
+		return recipes;
+	}
 	
 	
 	

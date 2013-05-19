@@ -63,4 +63,11 @@ public class Recipe {
 		this.items = items;
 	}
 
+	public int inferStrongType() {
+		if ((type & NORMAL) == NORMAL)
+			return NORMAL;
+		else
+			return DESSERT;
+	}
+
 }
