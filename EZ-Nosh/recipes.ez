@@ -22,7 +22,7 @@ Fromage râpé, 0.5, paquet
 Fromage de chèvre, 0.5, paquet
 *
 Viande forestière et patates
-1
+5
 Viande, 2, portions
 Crème fraiche, 0.5, pot
 Champignons frais, 0.5, boîte
@@ -30,7 +30,7 @@ Oignon, 1
 pommes de terre, 4
 *
 Viande forestière et pâtes
-1
+5
 Viande, 2, portions
 Crème fraiche, 0.5, pot
 Champignons frais, 0.5, boîte
@@ -49,7 +49,7 @@ lardons, 1, paquet
 Crème fraiche, 0.5, pot
 *
 Poulet et riz complet
-1
+5
 riz complet, 200, grammes
 poulet, 2, cuisses
 *
@@ -85,7 +85,7 @@ farine, 200, grammes
 vin blanc, 25, cl
 *
 Risotto
-1
+5
 riz complet, 200, grammes
 petits pois, 1, portion
 champignons frais, 0.5, boîte
@@ -108,7 +108,7 @@ crème fraiche, 0.5, pot
 fromage râpé, 0.5, paquet
 *
 Tarte/Tartelettes aux courgettes
-17
+21
 pâte feuilletée, 1
 courgettes, 3
 oignon, 1
@@ -121,7 +121,7 @@ tomates, 4
 radis, 1, portion
 fenouil, 2
 pommes de terre, 4
-concombre,1
+concombre, 1
 poivrons, 2
 pain, 1
 salade verte, 1
@@ -146,8 +146,8 @@ oignon, 1
 Crumble de légumes
 21
 poivrons, 2
-courgette,1
-oignons,2
+courgette, 1
+oignons, 2
 parmesan, 100, grammes
 *
 Quiche lorraine
@@ -173,6 +173,7 @@ oignons, 2
 tomates entières pelées, 1, boite
 *
 Pâtes Bolognaise Maison
+1
 oignon, 1
 boeuf haché, 700, grammes
 tomates entières pelées, 1, boite
@@ -227,7 +228,7 @@ confiture, 1
 *
 Tarte/Tartelettes aux framboises
 8
-pâte sablée
+pâte sablée, 1
 framboises surgelées, 1, paquet
 *
 Gauffres
