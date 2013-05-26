@@ -283,6 +283,7 @@ public class Window {
 				int f = (int) input.get(3).getValue();
 				int d = (int) input.get(4).getValue();
 				int n = t - s - p - f;
+				System.out.println(new RequestGenerateEvent(n, s, p, f, d));
 				
 				bus.post(new RequestGenerateEvent(n, s, p, f, d));
 			}
@@ -295,7 +296,7 @@ public class Window {
 	public void on(SuggestRecipesEvent e) {
 		List<Recipe> sugg = e.getList();
 		Iterator<Recipe> it = sugg.iterator();
-		
+		System.out.println(sugg);
 		if (!e.isAppend()) {
 			recipe_area.removeAll();
 		}
@@ -307,6 +308,7 @@ public class Window {
 		while (it.hasNext()) {
 			Recipe rec = it.next();
 			int t = rec.getStrongType();
+			
 			if (current_type != t) {
 				current_type = t;
 				int k = -1;
@@ -367,7 +369,7 @@ public class Window {
 		}		
 		
 		recipe_area.validate();
-		recipe_area.repaint();		
+		recipe_area.repaint();
 	}
 
 	@Subscribe

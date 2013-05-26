@@ -1,6 +1,5 @@
 package model;
 
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,13 +9,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-
-
 public class RecipeManager {
 	private static RecipeManager self = null;
-	
+
 	public static RecipeManager get() {
-		if (self==null)
+		if (self == null)
 			try {
 				self = new RecipeManager();
 			} catch (Exception e) {
@@ -24,11 +21,11 @@ public class RecipeManager {
 			}
 		return self;
 	}
-	
+
 	private LinkedList<Recipe> recipes;
 	private HashMap<Integer, LinkedList<Recipe>> cache;
 	private BufferedReader input;
-	
+
 	private RecipeManager() throws Exception {
 		recipes = new LinkedList<Recipe>();
 		loadRecipes();
@@ -36,35 +33,37 @@ public class RecipeManager {
 
 	private void loadRecipes() throws Exception {
 		String fname = "recipes.ez";
-		input = new BufferedReader(new InputStreamReader(
-                new FileInputStream(fname), "UTF8"));
-		
+		input = new BufferedReader(new InputStreamReader(new FileInputStream(
+				fname), "UTF8"));
+
 		Recipe recip;
 		recip = getNextRecipe();
 		while (recip != null) {
 			recipes.add(recip);
 			recip = getNextRecipe();
 		}
-		
+
 		cache = new HashMap<Integer, LinkedList<Recipe>>();
 		cache.put(Recipe.NORMAL, new LinkedList<Recipe>());
 		cache.put(Recipe.SPEEDY, new LinkedList<Recipe>());
 		cache.put(Recipe.PICNIC, new LinkedList<Recipe>());
+		cache.put(Recipe.FANCY, new LinkedList<Recipe>());
 		cache.put(Recipe.DESSERT, new LinkedList<Recipe>());
-		
+
 		Iterator<Recipe> it = recipes.iterator();
 		while (it.hasNext()) {
 			recip = it.next();
-		
-			int [] types = {Recipe.NORMAL, Recipe.SPEEDY, Recipe.PICNIC, Recipe.DESSERT};
-			
+
+			int[] types = { Recipe.NORMAL, Recipe.SPEEDY, Recipe.PICNIC, Recipe.FANCY,
+					Recipe.DESSERT };
+
 			for (int i = 0; i < types.length; i++) {
-				if (isOfType(recip,types[i])) {
+				if (isOfType(recip, types[i])) {
 					cache.get(types[i]).add(recip);
 				}
 			}
 		}
-		
+
 	}
 
 	private boolean isOfType(Recipe recip, int type) {
@@ -81,7 +80,7 @@ public class RecipeManager {
 		r = new Recipe(name, type);
 		Item i;
 		i = getNextItem();
-		
+
 		while (i != null) {
 			r.add(i);
 			i = getNextItem();
@@ -99,41 +98,44 @@ public class RecipeManager {
 		String ing = opts[0];
 		String num = opts[1];
 		String unit = "";
-		if (opts.length>=3) {
+		if (opts.length >= 3) {
 			unit = opts[2];
 		}
-		i = new Item(ing,Float.parseFloat(num),unit);
-		
+		i = new Item(ing, Float.parseFloat(num), unit);
+
 		return i;
 	}
 
-	public List<Recipe> getRandomRecipes(int normals, int speedies, int picnics, int fancies, int desserts) {
+	public List<Recipe> getRandomRecipes(int normals, int speedies,
+			int picnics, int fancies, int desserts) {
 		List<Recipe> random = new LinkedList<Recipe>();
-		
-		int [] types = {Recipe.NORMAL, Recipe.SPEEDY, Recipe.PICNIC, Recipe.FANCY, Recipe.DESSERT};
-		int [] needs = {normals, speedies, picnics, fancies, desserts};
-		
-		
+
+		int[] types = { Recipe.NORMAL, Recipe.SPEEDY, Recipe.PICNIC,
+				Recipe.FANCY, Recipe.DESSERT };
+		int[] needs = { normals, speedies, picnics, fancies, desserts };
+
 		for (int i = 0; i < types.length; i++) {
-			for (int k = 0; k<needs[i]; k++) {
+			for (int k = 0; k < needs[i]; k++) {
+				System.out.println("has " + types[i]);
 				Recipe rec = getRandomRecipe(types[i]);
-				if (rec !=null)
+				if (rec != null)
 					random.add(rec);
+
 			}
 		}
-				
+
 		return random;
 	}
 
 	public Recipe getRandomRecipe(int type) {
 		LinkedList<Recipe> list = cache.get(type);
-		if (list== null || list.size()==0)
+		if (list == null || list.size() == 0)
 			return null;
-		
+
 		int index = (int) (Math.random() * list.size());
-		
+
 		Recipe r = list.get(index);
-		
+
 		return r.clone(type);
 	}
 
@@ -147,9 +149,10 @@ public class RecipeManager {
 				Item i = ing.next();
 				String name = i.getIngredient().toLowerCase();
 				String unit = i.getUnit().toLowerCase();
-				
-				if (amounts.containsKey(name,unit)) {
-					amounts.put(name, amounts.get(name,unit) + i.getAmount(), unit);
+
+				if (amounts.containsKey(name, unit)) {
+					amounts.put(name, amounts.get(name, unit) + i.getAmount(),
+							unit);
 				} else {
 					amounts.put(name, i.getAmount(), unit);
 				}
@@ -159,11 +162,8 @@ public class RecipeManager {
 	}
 
 	public List<Recipe> getAllRecipes() {
-		
+
 		return recipes;
 	}
-	
-	
-	
-	
+
 }
