@@ -99,11 +99,9 @@ public class Window {
 				JPanel row_title = new ImagePanel("title.png");
 				row_title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-				north_panel
-						.add(new Box.Filler(null, new Dimension(0, 10), null));
+				north_panel.add(new Box.Filler(null, new Dimension(0, 10), null));
 				north_panel.add(row_title);
-				north_panel
-						.add(new Box.Filler(null, new Dimension(0, 30), null));
+				north_panel.add(new Box.Filler(null, new Dimension(0, 30), null));
 				addField(north_panel, "Nombres de repas à prévoir : ", 25);
 			}
 			panel.add(north_panel, BorderLayout.NORTH);
@@ -125,8 +123,7 @@ public class Window {
 
 				JPanel panel_tomato = new JPanel();
 				{
-					panel_tomato.setLayout(new BoxLayout(panel_tomato,
-							BoxLayout.X_AXIS));
+					panel_tomato.setLayout(new BoxLayout(panel_tomato, BoxLayout.X_AXIS));
 					panel_tomato.setOpaque(false);
 					ImagePanel tomato = new ImagePanel("tomato.png");
 					tomato.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -159,8 +156,7 @@ public class Window {
 					// recipe_area.setOpaque(false);
 					recipe_area.setBorder(new LineBorder(Color.ORANGE, 4));
 					recipe_area.setBackground(new Color(255, 152, 83));
-					recipe_area.setLayout(new BoxLayout(recipe_area,
-							BoxLayout.Y_AXIS));
+					recipe_area.setLayout(new BoxLayout(recipe_area, BoxLayout.Y_AXIS));
 					/*
 					 * recipe_text = new JLabel(); recipe_area.add(recipe_text);
 					 */
@@ -230,12 +226,8 @@ public class Window {
 	}
 
 	private void registerToEnter(JButton button, int condition) {
-		button.registerKeyboardAction(button.getActionForKeyStroke(KeyStroke
-				.getKeyStroke(KeyEvent.VK_SPACE, 0, false)), KeyStroke
-				.getKeyStroke(KeyEvent.VK_ENTER, 0, false), condition);
-		button.registerKeyboardAction(button.getActionForKeyStroke(KeyStroke
-				.getKeyStroke(KeyEvent.VK_SPACE, 0, true)), KeyStroke
-				.getKeyStroke(KeyEvent.VK_ENTER, 0, true), condition);
+		button.registerKeyboardAction(button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false)), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), condition);
+		button.registerKeyboardAction(button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true)), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), condition);
 	}
 
 	private void initActions() {
@@ -255,7 +247,6 @@ public class Window {
 					e.printStackTrace();
 				}
 
-				// TODO: Why are eggs doublons ?
 				// TODO: Alphabetical order ingredients
 			}
 		});
@@ -319,8 +310,7 @@ public class Window {
 		// recipe_area.add(new JLabel("<html>Suggestions : </html>"));
 
 		int current_type = -1;
-		String[] names = { "normales", "rapides", "pique-niques", "chics",
-				"de desserts" };
+		String[] names = { "normales", "rapides", "pique-niques", "chics", "de desserts" };
 
 		while (it.hasNext()) {
 			Recipe rec = it.next();
@@ -404,7 +394,7 @@ public class Window {
 			} else {
 				str = "" + (f.intValue() + 1);
 			}
-			text = text + parseEntry(entry, str) + "\n";
+			text = text + parseEntry(entry, str) + "\r\n";
 		}
 		// text = text + "</html>";
 
@@ -449,7 +439,7 @@ public class Window {
 	}
 
 	private String parseEntry(Pair<String, String> entry, String str) {
-		return entry.getKey() + " : " + str + entry.getValue();
+		return entry.getKey() + " : " + str + " " + entry.getValue();
 	}
 
 }
