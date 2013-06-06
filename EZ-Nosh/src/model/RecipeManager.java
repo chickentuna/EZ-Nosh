@@ -95,11 +95,11 @@ public class RecipeManager {
 			return null;
 		}
 		String[] opts = line.trim().split(",");
-		String ing = opts[0];
-		String num = opts[1];
+		String ing = opts[0].trim();
+		String num = opts[1].trim();
 		String unit = "";
 		if (opts.length >= 3) {
-			unit = opts[2];
+			unit = opts[2].trim();
 		}
 		i = new Item(ing, Float.parseFloat(num), unit);
 

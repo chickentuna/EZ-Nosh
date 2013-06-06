@@ -26,6 +26,7 @@ public class Controller  {
 	private EventBus bus;
 	
 	public static void main(String[] args) throws FileNotFoundException {
+		
 		try {
 			new Controller();
 		} catch (IOException e) {
