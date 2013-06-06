@@ -116,7 +116,7 @@ public class RecipeManager {
 
 		for (int i = 0; i < types.length; i++) {
 			for (int k = 0; k < needs[i]; k++) {
-				System.out.println("has " + types[i]);
+				//System.out.println("has " + types[i]);
 				Recipe rec = getRandomRecipe(types[i]);
 				if (rec != null)
 					random.add(rec);
@@ -151,8 +151,7 @@ public class RecipeManager {
 				String unit = i.getUnit().toLowerCase();
 
 				if (amounts.containsKey(name, unit)) {
-					amounts.put(name, amounts.get(name, unit) + i.getAmount(),
-							unit);
+					amounts.put(name, amounts.get(name, unit) + i.getAmount(), unit);
 				} else {
 					amounts.put(name, i.getAmount(), unit);
 				}
