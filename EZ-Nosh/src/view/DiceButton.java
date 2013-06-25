@@ -6,6 +6,10 @@ import model.Recipe;
 
 public class DiceButton extends JButton {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private RecipeLabel rec;
 	
 	public DiceButton(RecipeLabel rec) {

@@ -6,6 +6,10 @@ import model.Recipe;
 
 public class BrocoliButton extends JButton {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private RecipeLabel rec;
 	
 	public BrocoliButton(RecipeLabel rec) {

@@ -1,7 +1,6 @@
 package events;
 
 import model.Recipe;
-import view.DiceButton;
 import view.RecipePointer;
 
 public class RollDiceEvent {

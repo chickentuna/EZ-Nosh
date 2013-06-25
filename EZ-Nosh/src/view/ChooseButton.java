@@ -15,6 +15,10 @@ import model.Recipe;
 
 public class ChooseButton extends JButton {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Recipe rec;
 	private EventBus _bus;
 	

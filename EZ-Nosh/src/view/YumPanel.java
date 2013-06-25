@@ -57,7 +57,6 @@ public class YumPanel extends JPanel {
 	}
 
 	public Recipe getRecipe() {
-		Recipe r;
 		LinkedList<Component> it = comps.get(RecipeLabel.class);
 		return ((RecipeLabel)it.get(0)).getRecipe();
 	

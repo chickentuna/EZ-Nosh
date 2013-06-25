@@ -3,40 +3,28 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
-
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
 import model.Amounts;
@@ -53,7 +41,6 @@ import events.RequestDiceEvent;
 import events.RequestGenerateEvent;
 import events.RequestIngedientsEvent;
 import events.RollDiceEvent;
-import events.SuggestAllEvent;
 import events.SuggestRecipesEvent;
 import javax.swing.border.LineBorder;
 
@@ -74,7 +61,6 @@ public class Window {
 
 	/** Control **/
 	private EventBus bus;
-	private JLabel recipe_text;
 	private JButton b_valider;
 	private JButton b_choose;
 
@@ -234,7 +220,7 @@ public class Window {
 		b_valider.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				List<Recipe> rs = recipe_area.getRecipes();
+				recipe_area.getRecipes();
 				bus.post(new RequestIngedientsEvent(recipe_area.getRecipes()));
 
 				try {
@@ -242,6 +228,7 @@ public class Window {
 					BufferedWriter out = new BufferedWriter(fr);
 					out.write(recipe_area.getRecipes().toString());
 					out.flush();
+					out.close();
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -421,6 +408,7 @@ public class Window {
 			BufferedWriter out = new BufferedWriter(fr);
 			out.write(text);
 			out.flush();
+			out.close();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
