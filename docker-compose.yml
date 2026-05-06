@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    image: poulton/ez-nosh:latest
+    ports:
+      - "3004:3000"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
