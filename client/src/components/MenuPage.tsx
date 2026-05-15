@@ -1,4 +1,4 @@
-import type { Recipe, Ingredient, MealState, Phase } from '../types';
+import type { Recipe, Ingredient, MealState, Course, CourseKey, Phase } from '../types';
 import DaySection from './DaySection';
 
 type Props = {
@@ -14,6 +14,13 @@ type Props = {
   onUpdateMeal: (dayIdx: number, mealIdx: number, update: Partial<MealState>) => void;
 };
 
+const COURSE_ORDER: CourseKey[] = ['entree', 'dish', 'dessert'];
+const COURSE_LABELS: Record<CourseKey, string> = {
+  entree: 'Entrée',
+  dish: 'Dish',
+  dessert: 'Dessert',
+};
+
 function triggerDownload(filename: string, content: string) {
   const url = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
   const a = document.createElement('a');
@@ -21,6 +28,12 @@ function triggerDownload(filename: string, content: string) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+function enabledCourses(meal: MealState): { key: CourseKey; course: Course }[] {
+  return COURSE_ORDER
+    .map(key => ({ key, course: meal[key] }))
+    .filter((c): c is { key: CourseKey; course: Course } => c.course !== null);
 }
 
 function buildMenuText(
@@ -35,10 +48,18 @@ function buildMenuText(
     lines.push(days[d]);
     for (let m = 0; m < meals.length; m++) {
       const meal = week[d][m];
-      const recipe = recipes.find(r => r.id === meal.recipeId);
-      const name = recipe?.name ?? '—';
-      const flag = recipe?.laVeille ? ' 🎑' : '';
-      lines.push(`  ${meals[m].padEnd(10)}: ${name} — ${meal.people} people${flag}`);
+      const courses = enabledCourses(meal);
+      if (courses.length === 0) {
+        lines.push(`  ${meals[m].padEnd(10)}: —`);
+        continue;
+      }
+      const parts = courses.map(({ key, course }) => {
+        const recipe = recipes.find(r => r.id === course.recipeId);
+        const name = recipe?.name ?? '—';
+        const flag = recipe?.laVeille ? ' 🎑' : '';
+        return `${COURSE_LABELS[key]}: ${name}${flag}`;
+      });
+      lines.push(`  ${meals[m].padEnd(10)}: ${parts.join(' | ')} — ${meal.people} people`);
     }
     lines.push('');
   }
@@ -53,12 +74,15 @@ function buildShoppingList(
   const totals = new Map<string, number>();
   for (const day of week) {
     for (const meal of day) {
-      if (!meal.recipeId || meal.people === 0) continue;
-      const recipe = recipes.find(r => r.id === meal.recipeId);
-      if (!recipe) continue;
-      const multiplier = meal.people / recipe.servings;
-      for (const ri of recipe.ingredients) {
-        totals.set(ri.ingredientId, (totals.get(ri.ingredientId) ?? 0) + ri.quantity * multiplier);
+      if (meal.people === 0) continue;
+      for (const { course } of enabledCourses(meal)) {
+        if (!course.recipeId) continue;
+        const recipe = recipes.find(r => r.id === course.recipeId);
+        if (!recipe) continue;
+        const multiplier = meal.people / recipe.servings;
+        for (const ri of recipe.ingredients) {
+          totals.set(ri.ingredientId, (totals.get(ri.ingredientId) ?? 0) + ri.quantity * multiplier);
+        }
       }
     }
   }
@@ -75,7 +99,6 @@ function buildShoppingList(
 }
 
 export default function MenuPage({ days, mealsByDay, week, categories, recipes, ingredients, phase, onGenerate, onReset, onUpdateMeal }: Props) {
-  const allSelected = phase === 'recipes' && week.every(day => day.every(meal => meal.recipeId !== ''));
 
   return (
     <div>
@@ -98,16 +121,16 @@ export default function MenuPage({ days, mealsByDay, week, categories, recipes, 
           ? <button onClick={onGenerate}>Generate Menu</button>
           : <button onClick={onReset}>Start Over</button>
         }
-        {allSelected && (
-          <>
-            <button onClick={() => triggerDownload('menu.txt', buildMenuText(week, days, mealsByDay, recipes))}>
-              Download Menu
-            </button>
-            <button onClick={() => triggerDownload('shopping-list.txt', buildShoppingList(week, recipes, ingredients))}>
-              Download Shopping List
-            </button>
-          </>
-        )}
+
+        <>
+          <button onClick={() => triggerDownload('menu.txt', buildMenuText(week, days, mealsByDay, recipes))}>
+            Download Menu
+          </button>
+          <button onClick={() => triggerDownload('shopping-list.txt', buildShoppingList(week, recipes, ingredients))}>
+            Download Shopping List
+          </button>
+        </>
+
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 {
-  "categories": ["lunchbox", "express", "picnic", "chef", "kiddy chef", "improv"],
+  "categories": ["lunchbox", "express", "picnic", "chef", "kiddy chef", "improv", "entrée", "dessert"],
   "ingredients": [
     { "id": "ing-01", "name": "haché pur bœuf", "unit": "g" },
     { "id": "ing-02", "name": "lentilles vertes cuites", "unit": "g" },

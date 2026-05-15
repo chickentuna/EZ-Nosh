@@ -20,10 +20,18 @@ export type Recipe = {
 
 export type MealTime = 'Breakfast' | 'Lunch' | 'Dinner';
 
-export type MealState = {
+export type Course = {
   category: string;
   recipeId: string;
+};
+
+export type CourseKey = 'entree' | 'dish' | 'dessert';
+
+export type MealState = {
   people: number;
+  entree: Course | null;
+  dish: Course | null;
+  dessert: Course | null;
 };
 
 export type Phase = 'categories' | 'recipes';

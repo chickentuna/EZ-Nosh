@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Recipe, MealState, Phase } from '../types';
+import type { Recipe, MealState, Course, CourseKey, Phase } from '../types';
 
 type Props = {
   meal: string;
@@ -10,109 +10,221 @@ type Props = {
   onUpdate: (update: Partial<MealState>) => void;
 };
 
-export default function MealRow({ meal, state, categories, recipes, phase, onUpdate }: Props) {
-  const activeRecipe = recipes.find(r => r.id === state.recipeId);
-  const step = activeRecipe?.servings ?? 1;
+const COURSE_LABELS: Record<CourseKey, string> = {
+  entree: 'Entrée',
+  dish: 'Dish',
+  dessert: 'Dessert',
+};
 
+const COURSE_ORDER: CourseKey[] = ['entree', 'dish', 'dessert'];
+
+const LOCKED_CATEGORIES: Partial<Record<CourseKey, string>> = {
+  entree: 'entrée',
+  dessert: 'dessert',
+};
+
+const RESERVED_CATEGORIES = Object.values(LOCKED_CATEGORIES) as string[];
+
+function defaultCourseFor(key: CourseKey, fallback: string): Course {
+  const locked = LOCKED_CATEGORIES[key];
+  if (locked) return { category: locked, recipeId: '' };
+  return { category: fallback, recipeId: '' };
+}
+
+function CourseControls({
+  courseKey,
+  course,
+  categories,
+  recipes,
+  phase,
+  people,
+  onChange,
+  onPeopleAdjust,
+}: {
+  courseKey: CourseKey;
+  course: Course;
+  categories: string[];
+  recipes: Recipe[];
+  phase: Phase;
+  people: number;
+  onChange: (update: Partial<Course>) => void;
+  onPeopleAdjust: (n: number) => void;
+}) {
+  const lockedCategory = LOCKED_CATEGORIES[courseKey];
+  const availableRecipes = lockedCategory
+    ? recipes.filter(r => r.category === lockedCategory)
+    : recipes;
+  const activeRecipe = recipes.find(r => r.id === course.recipeId);
   const [inputValue, setInputValue] = useState(activeRecipe?.name ?? '');
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setInputValue(activeRecipe?.name ?? '');
-  }, [state.recipeId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [course.recipeId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const suggestions = recipes.filter(r =>
+  const suggestions = availableRecipes.filter(r =>
     r.name.toLowerCase().includes(inputValue.toLowerCase())
   );
 
   function selectRecipe(r: Recipe) {
-    const update: Partial<MealState> = { recipeId: r.id, category: r.category };
-    if (state.people > 0 && state.people % r.servings !== 0) {
-      update.people = Math.ceil(state.people / r.servings) * r.servings;
+    onChange({ recipeId: r.id, category: r.category });
+    if (people > 0 && people % r.servings !== 0) {
+      onPeopleAdjust(Math.ceil(people / r.servings) * r.servings);
     }
-    onUpdate(update);
     setInputValue(r.name);
     setOpen(false);
   }
 
+  if (phase === 'categories') {
+    if (lockedCategory) {
+      return (
+        <span style={{ fontSize: '0.85em', color: '#555', fontStyle: 'italic' }}>
+          {lockedCategory}
+        </span>
+      );
+    }
+    const selectableCategories = categories.filter(c => !RESERVED_CATEGORIES.includes(c));
+    return (
+      <select value={course.category} onChange={e => onChange({ category: e.target.value })}>
+        {selectableCategories.map(cat => (
+          <option key={cat} value={cat}>{cat}</option>
+        ))}
+      </select>
+    );
+  }
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-      <span style={{ width: '80px' }}>{meal}</span>
-
-      {phase === 'categories' ? (
-        <select value={state.category} onChange={e => onUpdate({ category: e.target.value })}>
-          {categories.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
-      ) : (
-        <>
-          <span style={{ width: '80px', fontSize: '0.8em', color: '#555', fontStyle: 'italic' }}>
-            {activeRecipe?.category ?? state.category}
-          </span>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="text"
-              value={inputValue}
-              onChange={e => { setInputValue(e.target.value); setOpen(true); }}
-              onFocus={() => setOpen(true)}
-              onBlur={() => setTimeout(() => setOpen(false), 150)}
-              style={{ width: '180px' }}
-            />
-            {open && suggestions.length > 0 && (
-              <ul style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                background: 'white',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                listStyle: 'none',
-                margin: '2px 0 0',
-                padding: 0,
-                zIndex: 10,
-                maxHeight: '200px',
-                overflowY: 'auto',
-                minWidth: '220px',
-              }}>
-                {suggestions.map(r => (
-                  <li
-                    key={r.id}
-                    onMouseDown={() => selectRecipe(r)}
-                    style={{
-                      padding: '0.3rem 0.6rem',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      gap: '1rem',
-                    }}
-                  >
-                    <span>{r.name}</span>
-                    <span style={{ fontSize: '0.8em', color: '#888' }}>{r.category}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </>
-      )}
-
-      <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-        <span>People:</span>
+    <>
+      <span style={{ width: '80px', fontSize: '0.8em', color: '#555', fontStyle: 'italic' }}>
+        {activeRecipe?.category ?? course.category}
+      </span>
+      <div style={{ position: 'relative' }}>
         <input
-          type="number"
-          min={0}
-          step={step}
-          value={state.people}
-          style={{ width: '60px' }}
-          onChange={e => onUpdate({ people: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+          type="text"
+          value={inputValue}
+          onChange={e => { setInputValue(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setTimeout(() => setOpen(false), 150)}
+          style={{ width: '180px' }}
         />
-      </label>
-
-      {phase === 'recipes' && activeRecipe?.laVeille && (
+        {open && suggestions.length > 0 && (
+          <ul style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            background: 'white',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            listStyle: 'none',
+            margin: '2px 0 0',
+            padding: 0,
+            zIndex: 10,
+            maxHeight: '200px',
+            overflowY: 'auto',
+            minWidth: '220px',
+          }}>
+            {suggestions.map(r => (
+              <li
+                key={r.id}
+                onMouseDown={() => selectRecipe(r)}
+                style={{
+                  padding: '0.3rem 0.6rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  gap: '1rem',
+                }}
+              >
+                <span>{r.name}</span>
+                <span style={{ fontSize: '0.8em', color: '#888' }}>{r.category}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      {activeRecipe?.laVeille && (
         <span title="la veille — prepare the day before" style={{ fontSize: '1.2em' }}>🎑</span>
       )}
+    </>
+  );
+}
+
+export default function MealRow({ meal, state, categories, recipes, phase, onUpdate }: Props) {
+  const dishFallback = state.dish?.category ?? 'improv';
+  const step = (() => {
+    const courses = [state.entree, state.dish, state.dessert].filter((c): c is Course => !!c);
+    const steps = courses
+      .map(c => recipes.find(r => r.id === c.recipeId)?.servings)
+      .filter((s): s is number => !!s);
+    return steps.length > 0 ? steps[0] : 1;
+  })();
+
+  function toggleCourse(key: CourseKey, on: boolean) {
+    if (on) {
+      onUpdate({ [key]: defaultCourseFor(key, dishFallback) } as Partial<MealState>);
+    } else {
+      onUpdate({ [key]: null } as Partial<MealState>);
+    }
+  }
+
+  function updateCourse(key: CourseKey, update: Partial<Course>) {
+    const current = state[key];
+    if (!current) return;
+    onUpdate({ [key]: { ...current, ...update } } as Partial<MealState>);
+  }
+
+  const enabledCourses = COURSE_ORDER.filter(k => state[k] !== null);
+
+  return (
+    <div style={{ marginBottom: '0.5rem', paddingBottom: '0.25rem', borderBottom: '1px dashed #eee' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
+        <span style={{ width: '80px', fontWeight: 'bold' }}>{meal}</span>
+        {COURSE_ORDER.map(key => (
+          <label key={key} style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.85em' }}>
+            <input
+              type="checkbox"
+              checked={state[key] !== null}
+              onChange={e => toggleCourse(key, e.target.checked)}
+            />
+            {COURSE_LABELS[key]}
+          </label>
+        ))}
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto' }}>
+          <span>People:</span>
+          <input
+            type="number"
+            min={0}
+            step={step}
+            value={state.people}
+            style={{ width: '60px' }}
+            onChange={e => onUpdate({ people: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+          />
+        </label>
+      </div>
+
+      {enabledCourses.map(key => {
+        const course = state[key];
+        if (!course) return null;
+        return (
+          <div
+            key={key}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: '90px', marginBottom: '0.2rem' }}
+          >
+            <span style={{ width: '60px', fontSize: '0.85em', color: '#666' }}>{COURSE_LABELS[key]}:</span>
+            <CourseControls
+              courseKey={key}
+              course={course}
+              categories={categories}
+              recipes={recipes}
+              phase={phase}
+              people={state.people}
+              onChange={update => updateCourse(key, update)}
+              onPeopleAdjust={n => onUpdate({ people: n })}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

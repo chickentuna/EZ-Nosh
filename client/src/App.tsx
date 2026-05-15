@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Recipe, Ingredient, MealState, Phase } from './types';
+import type { Recipe, Ingredient, MealState, Course, Phase } from './types';
 import Nav from './components/Nav';
 import MenuPage from './components/MenuPage';
 import { apiUrl } from './lib/api';
@@ -29,8 +29,21 @@ const DEFAULT_CATEGORIES: Record<string, string[]> = {
 
 function buildInitialWeek(): MealState[][] {
   return DAYS.map(day =>
-    MEALS_BY_DAY[day].map((_, m) => ({ category: DEFAULT_CATEGORIES[day][m], recipeId: '', people: 4 }))
+    MEALS_BY_DAY[day].map((_, m) => ({
+      people: 4,
+      dish: { category: DEFAULT_CATEGORIES[day][m], recipeId: '' },
+      entree: null,
+      dessert: null,
+    }))
   );
+}
+
+function pickRecipeForCourse(course: Course, people: number, recipes: Recipe[]): string {
+  const byCategory = recipes.filter(r => r.category === course.category);
+  const fits = byCategory.filter(r => people === 0 || people % r.servings === 0);
+  const pool = fits.length > 0 ? fits : byCategory;
+  if (pool.length === 0) return '';
+  return pool[Math.floor(Math.random() * pool.length)].id;
 }
 
 export default function App() {
@@ -55,21 +68,28 @@ export default function App() {
 
   function handleGenerate() {
     if (!week) return;
+    const pick = (c: Course | null, people: number) =>
+      c ? { ...c, recipeId: pickRecipeForCourse(c, people, recipes) } : null;
     setWeek(week.map(day =>
-      day.map(meal => {
-        const byCategory = recipes.filter(r => r.category === meal.category);
-        const fits = byCategory.filter(r => meal.people === 0 || meal.people % r.servings === 0);
-        const pool = fits.length > 0 ? fits : byCategory;
-        const picked = pool[Math.floor(Math.random() * pool.length)];
-        return { ...meal, recipeId: picked?.id ?? '' };
-      })
+      day.map(meal => ({
+        ...meal,
+        entree: pick(meal.entree, meal.people),
+        dish: pick(meal.dish, meal.people),
+        dessert: pick(meal.dessert, meal.people),
+      }))
     ));
     setPhase('recipes');
   }
 
   function handleReset() {
     if (!week) return;
-    setWeek(week.map(day => day.map(meal => ({ ...meal, recipeId: '' }))));
+    const clear = (c: Course | null) => c ? { ...c, recipeId: '' } : null;
+    setWeek(week.map(day => day.map(meal => ({
+      ...meal,
+      entree: clear(meal.entree),
+      dish: clear(meal.dish),
+      dessert: clear(meal.dessert),
+    }))));
     setPhase('categories');
   }
 
