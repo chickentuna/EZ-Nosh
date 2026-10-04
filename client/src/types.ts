@@ -15,6 +15,8 @@ export type Recipe = {
   category: string;
   servings: number;
   laVeille: boolean;
+  instructions?: string;
+  toValidate?: boolean;
   ingredients: RecipeIngredient[];
 };
 

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import type { Recipe, MealState, Course, CourseKey, Phase } from '../types';
+import type { Recipe, Ingredient, MealState, Course, CourseKey, Phase } from '../types';
+import RecipeCard from './RecipeCard';
 
 type Props = {
   meal: string;
   state: MealState;
   categories: string[];
   recipes: Recipe[];
+  ingredients: Ingredient[];
   phase: Phase;
   onUpdate: (update: Partial<MealState>) => void;
 };
@@ -36,6 +38,7 @@ function CourseControls({
   course,
   categories,
   recipes,
+  ingredients,
   phase,
   people,
   onChange,
@@ -45,6 +48,7 @@ function CourseControls({
   course: Course;
   categories: string[];
   recipes: Recipe[];
+  ingredients: Ingredient[];
   phase: Phase;
   people: number;
   onChange: (update: Partial<Course>) => void;
@@ -57,6 +61,7 @@ function CourseControls({
   const activeRecipe = recipes.find(r => r.id === course.recipeId);
   const [inputValue, setInputValue] = useState(activeRecipe?.name ?? '');
   const [open, setOpen] = useState(false);
+  const [showCard, setShowCard] = useState(false);
 
   useEffect(() => {
     setInputValue(activeRecipe?.name ?? '');
@@ -146,11 +151,29 @@ function CourseControls({
       {activeRecipe?.laVeille && (
         <span title="la veille — prepare the day before" style={{ fontSize: '1.2em' }}>🎑</span>
       )}
+      {activeRecipe && (
+        <button
+          type="button"
+          title="See the recipe"
+          onClick={() => setShowCard(true)}
+          style={{ border: 'none', background: 'none', fontSize: '1.1em', padding: 0 }}
+        >
+          📖
+        </button>
+      )}
+      {showCard && activeRecipe && (
+        <RecipeCard
+          recipe={activeRecipe}
+          ingredients={ingredients}
+          people={people}
+          onClose={() => setShowCard(false)}
+        />
+      )}
     </>
   );
 }
 
-export default function MealRow({ meal, state, categories, recipes, phase, onUpdate }: Props) {
+export default function MealRow({ meal, state, categories, recipes, ingredients, phase, onUpdate }: Props) {
   const dishFallback = state.dish?.category ?? 'improv';
   const step = (() => {
     const courses = [state.entree, state.dish, state.dessert].filter((c): c is Course => !!c);
@@ -217,6 +240,7 @@ export default function MealRow({ meal, state, categories, recipes, phase, onUpd
               course={course}
               categories={categories}
               recipes={recipes}
+              ingredients={ingredients}
               phase={phase}
               people={state.people}
               onChange={update => updateCourse(key, update)}

@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import type { Recipe, Ingredient } from '../types';
 import Nav from '../components/Nav';
+import RecipeCard from '../components/RecipeCard';
 import { apiUrl } from '../lib/api';
 
 const IMPROV = 'improv';
@@ -100,11 +101,13 @@ type FormState = {
   category: string;
   servings: number;
   laVeille: boolean;
+  instructions: string;
+  toValidate: boolean;
   ingredientRows: IngredientRow[];
 };
 
 function emptyForm(defaultCategory: string): FormState {
-  return { name: '', category: defaultCategory, servings: 2, laVeille: false, ingredientRows: [] };
+  return { name: '', category: defaultCategory, servings: 2, laVeille: false, instructions: '', toValidate: false, ingredientRows: [] };
 }
 
 export default function RecipeEditor() {
@@ -113,6 +116,7 @@ export default function RecipeEditor() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [form, setForm] = useState<FormState>(emptyForm(''));
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<Recipe | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -134,6 +138,8 @@ export default function RecipeEditor() {
       category: recipe.category,
       servings: recipe.servings,
       laVeille: recipe.laVeille,
+      instructions: recipe.instructions ?? '',
+      toValidate: recipe.toValidate ?? false,
       ingredientRows: recipe.ingredients.map(i => ({
         ingredientId: i.ingredientId,
         quantity: i.quantity,
@@ -162,6 +168,8 @@ export default function RecipeEditor() {
       category: form.category,
       servings: form.servings,
       laVeille: form.laVeille,
+      instructions: form.instructions,
+      toValidate: form.toValidate,
       ingredients: form.ingredientRows
         .filter(row => !row.creatingNew && row.ingredientId)
         .map(({ ingredientId, quantity }) => ({ ingredientId, quantity })),
@@ -332,6 +340,26 @@ export default function RecipeEditor() {
             </div>
           )}
 
+          <label style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', marginTop: '0.5rem' }}>
+            <strong>Preparation</strong>
+            <textarea
+              rows={8}
+              placeholder={'1. …\n2. …'}
+              value={form.instructions}
+              onChange={e => setForm(f => ({ ...f, instructions: e.target.value }))}
+              style={{ fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
+            />
+          </label>
+
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <input
+              type="checkbox"
+              checked={form.toValidate}
+              onChange={e => setForm(f => ({ ...f, toValidate: e.target.checked }))}
+            />
+            ⚠️ To validate (untick once checked)
+          </label>
+
           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
             <button type="submit">{editingId ? 'Update' : 'Create'}</button>
             {editingId && <button type="button" onClick={cancelEdit}>Cancel</button>}
@@ -357,11 +385,15 @@ export default function RecipeEditor() {
             <tbody>
               {recipes.map(r => (
                 <tr key={r.id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ padding: '0.3rem 0.5rem' }}>{r.name}</td>
+                  <td style={{ padding: '0.3rem 0.5rem' }}>
+                    {r.name}
+                    {r.toValidate && <span title="To validate" style={{ marginLeft: '0.4rem', fontSize: '0.8em', color: '#b45309' }}>⚠️ à valider</span>}
+                  </td>
                   <td style={{ padding: '0.3rem 0.5rem' }}>{r.category}</td>
                   <td style={{ padding: '0.3rem 0.5rem' }}>{r.servings}</td>
                   <td style={{ padding: '0.3rem 0.5rem' }}>{r.laVeille ? '✓' : ''}</td>
                   <td style={{ padding: '0.3rem 0.5rem', display: 'flex', gap: '0.4rem' }}>
+                    <button onClick={() => setViewing(r)}>View</button>
                     <button onClick={() => startEdit(r)}>Edit</button>
                     <button onClick={() => handleDelete(r.id)}>Delete</button>
                   </td>
@@ -371,6 +403,10 @@ export default function RecipeEditor() {
           </table>
         )}
       </section>
+
+      {viewing && (
+        <RecipeCard recipe={viewing} ingredients={ingredients} onClose={() => setViewing(null)} />
+      )}
     </div>
   );
 }

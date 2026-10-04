@@ -111,6 +111,7 @@ export default function MenuPage({ days, mealsByDay, week, categories, recipes, 
             dayMeals={week[d]}
             categories={categories}
             recipes={recipes}
+            ingredients={ingredients}
             phase={phase}
             onUpdateMeal={(m, update) => onUpdateMeal(d, m, update)}
           />

@@ -1,4 +1,4 @@
-import type { Recipe, MealState, Phase } from '../types';
+import type { Recipe, Ingredient, MealState, Phase } from '../types';
 import MealRow from './MealRow';
 
 type Props = {
@@ -7,11 +7,12 @@ type Props = {
   dayMeals: MealState[];
   categories: string[];
   recipes: Recipe[];
+  ingredients: Ingredient[];
   phase: Phase;
   onUpdateMeal: (mealIdx: number, update: Partial<MealState>) => void;
 };
 
-export default function DaySection({ day, meals, dayMeals, categories, recipes, phase, onUpdateMeal }: Props) {
+export default function DaySection({ day, meals, dayMeals, categories, recipes, ingredients, phase, onUpdateMeal }: Props) {
   return (
     <div style={{ marginBottom: '1rem' }}>
       <h3>{day}</h3>
@@ -22,6 +23,7 @@ export default function DaySection({ day, meals, dayMeals, categories, recipes, 
           state={dayMeals[m]}
           categories={categories}
           recipes={recipes}
+          ingredients={ingredients}
           phase={phase}
           onUpdate={update => onUpdateMeal(m, update)}
         />
