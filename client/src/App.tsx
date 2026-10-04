@@ -27,11 +27,19 @@ const DEFAULT_CATEGORIES: Record<string, string[]> = {
   Sunday:    ['petit-déj', 'chef',       'express'],
 };
 
+// Meals that start ticked as "None" (nothing planned).
+const SKIPPED_BY_DEFAULT: Record<string, string[]> = {
+  Monday: ['Lunch'],
+  Tuesday: ['Lunch'],
+  Thursday: ['Lunch'],
+  Friday: ['Lunch'],
+};
+
 function buildInitialWeek(): MealState[][] {
   return DAYS.map(day =>
-    MEALS_BY_DAY[day].map((_, m) => ({
+    MEALS_BY_DAY[day].map((meal, m) => ({
       people: 4,
-      skipped: false,
+      skipped: SKIPPED_BY_DEFAULT[day]?.includes(meal) ?? false,
       dish: { category: DEFAULT_CATEGORIES[day][m], recipeId: '' },
       entree: null,
       dessert: null,
