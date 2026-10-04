@@ -12,12 +12,6 @@ type Props = {
   onUpdate: (update: Partial<MealState>) => void;
 };
 
-const COURSE_LABELS: Record<CourseKey, string> = {
-  entree: 'Entrée',
-  dish: 'Dish',
-  dessert: 'Dessert',
-};
-
 const COURSE_ORDER: CourseKey[] = ['entree', 'dish', 'dessert'];
 
 const LOCKED_CATEGORIES: Partial<Record<CourseKey, string>> = {
@@ -26,12 +20,6 @@ const LOCKED_CATEGORIES: Partial<Record<CourseKey, string>> = {
 };
 
 const RESERVED_CATEGORIES = Object.values(LOCKED_CATEGORIES) as string[];
-
-function defaultCourseFor(key: CourseKey, fallback: string): Course {
-  const locked = LOCKED_CATEGORIES[key];
-  if (locked) return { category: locked, recipeId: '' };
-  return { category: fallback, recipeId: '' };
-}
 
 function CourseControls({
   courseKey,
@@ -174,7 +162,6 @@ function CourseControls({
 }
 
 export default function MealRow({ meal, state, categories, recipes, ingredients, phase, onUpdate }: Props) {
-  const dishFallback = state.dish?.category ?? 'improv';
   const step = (() => {
     const courses = [state.entree, state.dish, state.dessert].filter((c): c is Course => !!c);
     const steps = courses
@@ -182,14 +169,6 @@ export default function MealRow({ meal, state, categories, recipes, ingredients,
       .filter((s): s is number => !!s);
     return steps.length > 0 ? steps[0] : 1;
   })();
-
-  function toggleCourse(key: CourseKey, on: boolean) {
-    if (on) {
-      onUpdate({ [key]: defaultCourseFor(key, dishFallback) } as Partial<MealState>);
-    } else {
-      onUpdate({ [key]: null } as Partial<MealState>);
-    }
-  }
 
   function updateCourse(key: CourseKey, update: Partial<Course>) {
     const current = state[key];
@@ -203,16 +182,6 @@ export default function MealRow({ meal, state, categories, recipes, ingredients,
     <div style={{ marginBottom: '0.5rem', paddingBottom: '0.25rem', borderBottom: '1px dashed #eee' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
         <span style={{ width: '80px', fontWeight: 'bold' }}>{meal}</span>
-        {COURSE_ORDER.map(key => (
-          <label key={key} style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.85em' }}>
-            <input
-              type="checkbox"
-              checked={state[key] !== null}
-              onChange={e => toggleCourse(key, e.target.checked)}
-            />
-            {COURSE_LABELS[key]}
-          </label>
-        ))}
         <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto' }}>
           <span>People:</span>
           <input
@@ -234,7 +203,6 @@ export default function MealRow({ meal, state, categories, recipes, ingredients,
             key={key}
             style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: '90px', marginBottom: '0.2rem' }}
           >
-            <span style={{ width: '60px', fontSize: '0.85em', color: '#666' }}>{COURSE_LABELS[key]}:</span>
             <CourseControls
               courseKey={key}
               course={course}

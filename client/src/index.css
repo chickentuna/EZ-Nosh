@@ -26,3 +26,8 @@ button {
   position: relative;
   z-index: 1;
 }
+
+.preparation-editor {
+  min-height: 220px;
+  font-family: sans-serif;
+}

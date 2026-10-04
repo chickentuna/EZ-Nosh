@@ -1,4 +1,6 @@
 import { createPortal } from 'react-dom';
+import Markdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
 import type { Recipe, Ingredient } from '../types';
 
 type Props = {
@@ -76,8 +78,8 @@ export default function RecipeCard({ recipe, ingredients, people, onClose }: Pro
 
         <strong>Preparation</strong>
         {recipe.instructions?.trim() ? (
-          <div style={{ whiteSpace: 'pre-wrap', marginTop: '0.3rem', lineHeight: 1.5 }}>
-            {recipe.instructions}
+          <div style={{ marginTop: '0.3rem', lineHeight: 1.5 }}>
+            <Markdown remarkPlugins={[remarkBreaks]}>{recipe.instructions}</Markdown>
           </div>
         ) : (
           <p style={{ marginTop: '0.3rem', color: '#888', fontStyle: 'italic' }}>

@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import type { Recipe, Ingredient } from '../types';
 import Nav from '../components/Nav';
+import PreparationEditor from '../components/PreparationEditor';
 import RecipeCard from '../components/RecipeCard';
 import { apiUrl } from '../lib/api';
 
@@ -117,6 +118,7 @@ export default function RecipeEditor() {
   const [form, setForm] = useState<FormState>(emptyForm(''));
   const [editingId, setEditingId] = useState<string | null>(null);
   const [viewing, setViewing] = useState<Recipe | null>(null);
+  const [formVersion, setFormVersion] = useState(0);
 
   useEffect(() => {
     Promise.all([
@@ -133,6 +135,7 @@ export default function RecipeEditor() {
 
   function startEdit(recipe: Recipe) {
     setEditingId(recipe.id);
+    setFormVersion(v => v + 1);
     setForm({
       name: recipe.name,
       category: recipe.category,
@@ -152,6 +155,7 @@ export default function RecipeEditor() {
 
   function cancelEdit() {
     setEditingId(null);
+    setFormVersion(v => v + 1);
     setForm(emptyForm(categories[0] ?? ''));
   }
 
@@ -193,6 +197,7 @@ export default function RecipeEditor() {
       const created: Recipe = await res.json();
       setRecipes(rs => [...rs, created]);
       setForm(emptyForm(categories[0] ?? ''));
+      setFormVersion(v => v + 1);
     }
   }
 
@@ -238,7 +243,7 @@ export default function RecipeEditor() {
       <Nav />
       <h2>Recipe Editor</h2>
 
-      <section style={{ marginBottom: '2rem', maxWidth: '520px' }}>
+      <section style={{ marginBottom: '2rem' }}>
         <h3>{editingId ? 'Edit Recipe' : 'New Recipe'}</h3>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <label style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
@@ -340,16 +345,14 @@ export default function RecipeEditor() {
             </div>
           )}
 
-          <label style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', marginTop: '0.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', marginTop: '0.5rem' }}>
             <strong>Preparation</strong>
-            <textarea
-              rows={8}
-              placeholder={'1. …\n2. …'}
+            <PreparationEditor
+              key={formVersion}
               value={form.instructions}
-              onChange={e => setForm(f => ({ ...f, instructions: e.target.value }))}
-              style={{ fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
+              onChange={md => setForm(f => ({ ...f, instructions: md }))}
             />
-          </label>
+          </div>
 
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <input
