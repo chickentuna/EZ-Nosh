@@ -6,6 +6,27 @@ import RecipeCard from '../components/RecipeCard';
 import { apiUrl } from '../lib/api';
 
 const IMPROV = 'improv';
+const ALL = '__all__';
+const TO_VALIDATE = '__toValidate__';
+
+function FilterChip({ label, count, active, onClick }: { label: string; count: number; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        border: '1px solid #15803d',
+        borderRadius: '999px',
+        padding: '0.2rem 0.7rem',
+        background: active ? '#15803d' : 'white',
+        color: active ? 'white' : '#15803d',
+        fontWeight: 600,
+      }}
+    >
+      {label} <span style={{ opacity: 0.7, fontWeight: 400 }}>({count})</span>
+    </button>
+  );
+}
 
 type IngredientTypeaheadProps = {
   value: string;
@@ -118,6 +139,7 @@ export default function RecipeEditor() {
   const [form, setForm] = useState<FormState>(emptyForm(''));
   const [editingId, setEditingId] = useState<string | null>(null);
   const [viewing, setViewing] = useState<Recipe | null>(null);
+  const [filter, setFilter] = useState<string>(ALL);
   const [formVersion, setFormVersion] = useState(0);
 
   useEffect(() => {
@@ -237,6 +259,10 @@ export default function RecipeEditor() {
     setIngredients(ings => [...ings, created]);
     updateRow(rowIdx, { ingredientId: created.id, creatingNew: false, newName: '', newUnit: '' });
   }
+
+  const visibleRecipes = recipes.filter(r =>
+    filter === ALL ? true : filter === TO_VALIDATE ? r.toValidate : r.category === filter
+  );
 
   return (
     <div>
@@ -372,7 +398,25 @@ export default function RecipeEditor() {
 
       <section>
         <h3>All Recipes</h3>
-        {recipes.length === 0 ? (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', margin: '0.5rem 0 0.75rem' }}>
+          <FilterChip label="All" count={recipes.length} active={filter === ALL} onClick={() => setFilter(ALL)} />
+          {categories.map(cat => (
+            <FilterChip
+              key={cat}
+              label={cat}
+              count={recipes.filter(r => r.category === cat).length}
+              active={filter === cat}
+              onClick={() => setFilter(cat)}
+            />
+          ))}
+          <FilterChip
+            label="⚠️ à valider"
+            count={recipes.filter(r => r.toValidate).length}
+            active={filter === TO_VALIDATE}
+            onClick={() => setFilter(TO_VALIDATE)}
+          />
+        </div>
+        {visibleRecipes.length === 0 ? (
           <p>No recipes yet.</p>
         ) : (
           <table style={{ borderCollapse: 'collapse', width: '100%' }}>
@@ -386,7 +430,7 @@ export default function RecipeEditor() {
               </tr>
             </thead>
             <tbody>
-              {recipes.map(r => (
+              {visibleRecipes.map(r => (
                 <tr key={r.id} style={{ borderBottom: '1px solid #eee' }}>
                   <td style={{ padding: '0.3rem 0.5rem' }}>
                     {r.name}
