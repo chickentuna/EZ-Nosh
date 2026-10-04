@@ -18,13 +18,13 @@ const MEALS_BY_DAY: Record<string, string[]> = Object.fromEntries(
 );
 
 const DEFAULT_CATEGORIES: Record<string, string[]> = {
-  Monday:    ['improv', 'lunchbox',   'improv', 'chef'],
-  Tuesday:   ['improv', 'lunchbox',   'improv', 'express'],
-  Wednesday: ['improv', 'kiddy chef', 'chef'],
-  Thursday:  ['improv', 'lunchbox',   'improv', 'express'],
-  Friday:    ['improv', 'lunchbox',   'improv', 'chef'],
-  Saturday:  ['improv', 'kiddy chef', 'chef'],
-  Sunday:    ['improv', 'chef',       'express'],
+  Monday:    ['petit-déj', 'lunchbox',   'improv', 'chef'],
+  Tuesday:   ['petit-déj', 'lunchbox',   'improv', 'express'],
+  Wednesday: ['petit-déj', 'kiddy chef', 'chef'],
+  Thursday:  ['petit-déj', 'lunchbox',   'improv', 'express'],
+  Friday:    ['petit-déj', 'lunchbox',   'improv', 'chef'],
+  Saturday:  ['petit-déj', 'kiddy chef', 'chef'],
+  Sunday:    ['petit-déj', 'chef',       'express'],
 };
 
 function buildInitialWeek(): MealState[][] {
