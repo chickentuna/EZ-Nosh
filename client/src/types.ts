@@ -31,6 +31,7 @@ export type CourseKey = 'entree' | 'dish' | 'dessert';
 
 export type MealState = {
   people: number;
+  skipped: boolean;
   entree: Course | null;
   dish: Course | null;
   dessert: Course | null;

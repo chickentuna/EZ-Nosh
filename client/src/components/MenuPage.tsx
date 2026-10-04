@@ -31,6 +31,7 @@ function triggerDownload(filename: string, content: string) {
 }
 
 function enabledCourses(meal: MealState): { key: CourseKey; course: Course }[] {
+  if (meal.skipped) return [];
   return COURSE_ORDER
     .map(key => ({ key, course: meal[key] }))
     .filter((c): c is { key: CourseKey; course: Course } => c.course !== null);

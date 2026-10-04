@@ -179,9 +179,18 @@ export default function MealRow({ meal, state, categories, recipes, ingredients,
   const enabledCourses = COURSE_ORDER.filter(k => state[k] !== null);
 
   return (
-    <div style={{ marginBottom: '0.5rem', paddingBottom: '0.25rem', borderBottom: '1px dashed #eee' }}>
+    <div style={{ marginBottom: '0.5rem', paddingBottom: '0.25rem', borderBottom: '1px dashed #eee', opacity: state.skipped ? 0.5 : 1 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-        <span style={{ width: '80px', fontWeight: 'bold' }}>{meal}</span>
+        <span style={{ width: '80px', fontWeight: 'bold', textDecoration: state.skipped ? 'line-through' : 'none' }}>{meal}</span>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.85em' }}>
+          <input
+            type="checkbox"
+            checked={state.skipped}
+            onChange={e => onUpdate({ skipped: e.target.checked })}
+          />
+          None
+        </label>
+        {!state.skipped && (
         <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto' }}>
           <span>People:</span>
           <input
@@ -193,9 +202,10 @@ export default function MealRow({ meal, state, categories, recipes, ingredients,
             onChange={e => onUpdate({ people: Math.max(0, parseInt(e.target.value, 10) || 0) })}
           />
         </label>
+        )}
       </div>
 
-      {enabledCourses.map(key => {
+      {!state.skipped && enabledCourses.map(key => {
         const course = state[key];
         if (!course) return null;
         return (

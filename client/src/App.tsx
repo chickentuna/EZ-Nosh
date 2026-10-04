@@ -31,6 +31,7 @@ function buildInitialWeek(): MealState[][] {
   return DAYS.map(day =>
     MEALS_BY_DAY[day].map((_, m) => ({
       people: 4,
+      skipped: false,
       dish: { category: DEFAULT_CATEGORIES[day][m], recipeId: '' },
       entree: null,
       dessert: null,
