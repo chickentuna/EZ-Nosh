@@ -7,6 +7,8 @@ export type Ingredient = {
 export type RecipeIngredient = {
   ingredientId: string;
   quantity: number;
+  // Main ingredients are what the menu generator keeps out of two meals in a row.
+  main?: boolean;
 };
 
 export type Recipe = {
@@ -17,6 +19,8 @@ export type Recipe = {
   laVeille: boolean;
   instructions?: string;
   toValidate?: boolean;
+  // Disabled recipes are never picked for a menu.
+  disabled?: boolean;
   ingredients: RecipeIngredient[];
 };
 

@@ -43,9 +43,10 @@ function CourseControls({
   onPeopleAdjust: (n: number) => void;
 }) {
   const lockedCategory = LOCKED_CATEGORIES[courseKey];
+  const enabledRecipes = recipes.filter(r => !r.disabled);
   const availableRecipes = lockedCategory
-    ? recipes.filter(r => r.category === lockedCategory)
-    : recipes;
+    ? enabledRecipes.filter(r => r.category === lockedCategory)
+    : enabledRecipes;
   const activeRecipe = recipes.find(r => r.id === course.recipeId);
   const [inputValue, setInputValue] = useState(activeRecipe?.name ?? '');
   const [open, setOpen] = useState(false);

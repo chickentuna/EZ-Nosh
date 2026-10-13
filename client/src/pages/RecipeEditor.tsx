@@ -8,6 +8,7 @@ import { apiUrl } from '../lib/api';
 const IMPROV = 'improv';
 const ALL = '__all__';
 const TO_VALIDATE = '__toValidate__';
+const DISABLED = '__disabled__';
 
 function FilterChip({ label, count, active, onClick }: { label: string; count: number; active: boolean; onClick: () => void }) {
   return (
@@ -113,6 +114,7 @@ function IngredientTypeahead({ value, ingredients, onSelect, onCreateNew }: Ingr
 type IngredientRow = {
   ingredientId: string;
   quantity: number;
+  main: boolean;
   creatingNew: boolean;
   newName: string;
   newUnit: string;
@@ -125,11 +127,12 @@ type FormState = {
   laVeille: boolean;
   instructions: string;
   toValidate: boolean;
+  disabled: boolean;
   ingredientRows: IngredientRow[];
 };
 
 function emptyForm(defaultCategory: string): FormState {
-  return { name: '', category: defaultCategory, servings: 2, laVeille: false, instructions: '', toValidate: false, ingredientRows: [] };
+  return { name: '', category: defaultCategory, servings: 2, laVeille: false, instructions: '', toValidate: false, disabled: false, ingredientRows: [] };
 }
 
 export default function RecipeEditor() {
@@ -165,9 +168,11 @@ export default function RecipeEditor() {
       laVeille: recipe.laVeille,
       instructions: recipe.instructions ?? '',
       toValidate: recipe.toValidate ?? false,
+      disabled: recipe.disabled ?? false,
       ingredientRows: recipe.ingredients.map(i => ({
         ingredientId: i.ingredientId,
         quantity: i.quantity,
+        main: i.main ?? false,
         creatingNew: false,
         newName: '',
         newUnit: '',
@@ -196,9 +201,10 @@ export default function RecipeEditor() {
       laVeille: form.laVeille,
       instructions: form.instructions,
       toValidate: form.toValidate,
+      disabled: form.disabled,
       ingredients: form.ingredientRows
         .filter(row => !row.creatingNew && row.ingredientId)
-        .map(({ ingredientId, quantity }) => ({ ingredientId, quantity })),
+        .map(({ ingredientId, quantity, main }) => (main ? { ingredientId, quantity, main } : { ingredientId, quantity })),
     };
 
     if (editingId) {
@@ -229,6 +235,7 @@ export default function RecipeEditor() {
       ingredientRows: [...f.ingredientRows, {
         ingredientId: '',
         quantity: 1,
+        main: false,
         creatingNew: false,
         newName: '',
         newUnit: '',
@@ -261,7 +268,10 @@ export default function RecipeEditor() {
   }
 
   const visibleRecipes = recipes.filter(r =>
-    filter === ALL ? true : filter === TO_VALIDATE ? r.toValidate : r.category === filter
+    filter === ALL ? true
+      : filter === TO_VALIDATE ? r.toValidate
+      : filter === DISABLED ? r.disabled
+      : r.category === filter
   );
 
   return (
@@ -360,6 +370,17 @@ export default function RecipeEditor() {
                         style={{ width: '70px' }}
                         onChange={e => updateRow(idx, { quantity: parseFloat(e.target.value) || 0 })}
                       />
+                      <label
+                        title="Main ingredient: the menu avoids it in two meals in a row"
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.85em' }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={row.main}
+                          onChange={e => updateRow(idx, { main: e.target.checked })}
+                        />
+                        main
+                      </label>
                       <button type="button" onClick={() => removeRow(idx)}>✕</button>
                     </>
                   )}
@@ -389,6 +410,15 @@ export default function RecipeEditor() {
             ⚠️ To validate (untick once checked)
           </label>
 
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <input
+              type="checkbox"
+              checked={form.disabled}
+              onChange={e => setForm(f => ({ ...f, disabled: e.target.checked }))}
+            />
+            🚫 Disabled (never picked for a menu)
+          </label>
+
           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
             <button type="submit">{editingId ? 'Update' : 'Create'}</button>
             {editingId && <button type="button" onClick={cancelEdit}>Cancel</button>}
@@ -415,6 +445,12 @@ export default function RecipeEditor() {
             active={filter === TO_VALIDATE}
             onClick={() => setFilter(TO_VALIDATE)}
           />
+          <FilterChip
+            label="🚫 disabled"
+            count={recipes.filter(r => r.disabled).length}
+            active={filter === DISABLED}
+            onClick={() => setFilter(DISABLED)}
+          />
         </div>
         {visibleRecipes.length === 0 ? (
           <p>No recipes yet.</p>
@@ -435,6 +471,7 @@ export default function RecipeEditor() {
                   <td style={{ padding: '0.3rem 0.5rem' }}>
                     {r.name}
                     {r.toValidate && <span title="To validate" style={{ marginLeft: '0.4rem', fontSize: '0.8em', color: '#b45309' }}>⚠️ à valider</span>}
+                    {r.disabled && <span title="Never picked for a menu" style={{ marginLeft: '0.4rem', fontSize: '0.8em', color: '#b91c1c' }}>🚫 disabled</span>}
                   </td>
                   <td style={{ padding: '0.3rem 0.5rem' }}>{r.category}</td>
                   <td style={{ padding: '0.3rem 0.5rem' }}>{r.servings}</td>
