@@ -24,7 +24,7 @@ const DEFAULT_CATEGORIES: Record<string, string[]> = {
   Thursday:  ['petit-déj', 'lunchbox',   'improv', 'express'],
   Friday:    ['petit-déj', 'lunchbox',   'improv', 'chef'],
   Saturday:  ['improv',    'kiddy chef', 'chef'],
-  Sunday:    ['petit-déj', 'chef',       'express'],
+  Sunday:    ['improv',    'chef',       'express'],
 };
 
 // Meals that start ticked as "None" (nothing planned).
